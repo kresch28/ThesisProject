@@ -1,74 +1,45 @@
-import React from 'react';
+import React, {useState, useEffect} from "react";
+import { firebase } from '../src/initFirebase'
+import { Lesson } from "./lessons/lessonComponent";
+import { Image } from "./tasks/imageTask";
+
 
 import Head from 'next/head'
-import Link from 'next/link'
-import Styles from '@material-ui/core/styles'
+import Link from '@material-ui/core/Link'
+import Button from '@material-ui/core/Button';
 import { Typography } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles'
+import { makeStyles, useTheme } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
-import { borders } from '@material-ui/system';
 import { createMuiTheme } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
-import { display } from '@material-ui/system';
 
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 
-import Switch from '@material-ui/core/Switch';
 import Paper from '@material-ui/core/Paper';
-import Fade from '@material-ui/core/Fade';
 
-import Drawer from '@material-ui/core/Drawer';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+import MobileStepper from '@material-ui/core/MobileStepper';
+import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
+import Slide from '@material-ui/core/Slide';
 
 let theme = createMuiTheme();
 theme.spacing(2);
 
-const drawerWidth = 240;
+const db = firebase.database();
 
-const styles = {
-    root: {
-        background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-        border: 0,
-        borderRadius: 3,
-        boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
-        color: 'white',
-        height: 48,
-        padding: '0 30px',
-    },
-};
+const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
     root: {
-        width: '100%',
+      width: '100%',
     },
-    heading: {
-        fontSize: theme.typography.pxToRem(15),
-        fontWeight: theme.typography.fontWeightRegular,
-    },
-    // style rule
-    foo: props => ({
-        backgroundColor: props.backgroundColor,
-    }),
-    bar: {
-        // CSS property
-        color: props => props.color,
-    },
-    highlightColour: {
-        borderColor: props => props.borderColor,
+    textCenter: {
+        alignItems: props => props.alignItems,
     },
     container: {
         display: 'flex',
@@ -91,98 +62,146 @@ const useStyles = makeStyles((theme) => ({
     pos: {
         marginBottom: 12,
     },
-    card: {
-        width: 300,
-    },
-    rootDrawer: {
-        display: 'flex',
-    },
-    appBar: {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: drawerWidth,
-    },
-    drawer: {
-        width: drawerWidth,
-        flexShrink: 0,
-    },
-    drawerPaper: {
-        width: drawerWidth,
-    },
-    // necessary for content to be below app bar
-    toolbar: theme.mixins.toolbar,
     content: {
         flexGrow: 1,
-        backgroundColor: theme.palette.background.default,
         padding: theme.spacing(3),
+        transition: theme.transitions.create('margin', {
+            easing: theme.transitions.easing.sharp,
+            duration: theme.transitions.duration.leavingScreen,
+        }),
+        marginLeft: -drawerWidth,
     },
+    header: {
+        display: 'flex',
+        alignItems: 'center',
+        flexDirection: 'column',
+        paddingLeft: theme.spacing(4),
+        backgroundColor: theme.palette.background.default,
+    },
+    img: {
+        height: 255,
+        maxWidth: 400,
+        overflow: 'hidden',
+        display: 'block',
+        width: '100%',
+    },
+    props: {
+        color: 'black',
+        alignItems: 'center'
+    },
+    accordion: {
+        backgroundColor: '#BAE6FF',
+    }
 }));
-export default function Home() {
-    const props = { backgroundColor: '#707070', color: 'black', highlightColour:'#E86B00'};
+
+
+
+export default function Home(context) {
+
     // Pass the props as the first argument of useStyles()
-    const classes = useStyles(props);
+    const classes = useStyles(theme);
     const [checked, setChecked] = React.useState(false);
+    const [open, setOpen] = React.useState(false);
+
+    const handleDrawerOpen = () => {
+        setOpen(true);
+    };
+
+    const handleDrawerClose = () => {
+        setOpen(false);
+    };
+
+    let AuthButton;
+    if (open) {
+        AuthButton = <Button variant="contained" onClick={handleDrawerClose}>Default</Button>;
+    } else {
+        AuthButton = <Button variant="contained" onClick={handleDrawerOpen}>Default</Button>
+        ;
+    }
+
+    const [selectedIndex, setSelectedIndex] = React.useState(1);
+
+    function handleListItemClick(event, index) {
+        setSelectedIndex(index);
+    }
 
     const handleChange = () => {
         setChecked((prev) => !prev);
     };
+
+    const tutorialSteps = [
+        {
+            label: 'Lesson 1',
+            tasks: 7
+        },
+        {
+            label: 'Lesson 2',
+            tasks: 6
+        },
+        {
+            label: 'Lesson 3',
+            tasks: 6
+        },
+        {
+            label: 'Lesson 4',
+            tasks: 3
+        }
+    ];
+    const [activeStep, setActiveStep] = React.useState(0);
+    const maxSteps = tutorialSteps.length;
+
+    const handleNext = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    };
+
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    }
+
+    const handleDirectLink = (id) => {
+        setActiveStep((prevActiveStep) => id);
+    };
+
+    const [allDone, setAllDone] = React.useState(false);
+    const sendDataToParent = (check) => { // the callback. Use a better name
+        console.log(check);
+        if(check == true) {
+            handleDrawerOpen(true);
+        }
+    };
+
+
+    const data = db.ref().child("tasks").get().then((snapshot) => {
+        if (snapshot.exists()) {
+            console.log(snapshot.val())
+        }
+        else {
+        console.log("No data available");
+        }
+    }).catch((error) => {
+        console.error(error);
+    });
+
+    console.log(data);
+
+
   return (
       <div>
-          <Box className={`${classes.foo}`} border={5} borderColor="orange" m={3} p={2}>
+          <Box className={classes.props} border={5} borderColor="orange" m={3} p={2}>
         <Head>
         <title>Create Next App</title>
         <link rel="icon" href="/favicon.ico" />
         </Head>
 
         <main>
-          {/*<Container maxWidth="sm" className={`${classes.foo}  ${classes.bar}`}>*/}
             <Container maxWidth="sm">
                 <h1 align="center">
                 Read{' '}
-                <Link href="/posts/first-post">
-                    <a>this page!</a>
+                <Link href="/posts/first-post" color="inherit">
+                    this page!
                 </Link>
                 </h1>
           </Container>
-
-          <Container maxWidth="lg">
-            <p className="description" spacing={2}>
-              Get started by editing <code>pages/index.js</code>
-            </p>
-              <a href="https://nextjs.org/docs" className="card">
-              <h3>Documentation &rarr;</h3>
-              <p>Find in-depth information about Next.js features and API.</p>
-              </a>
-          </Container>
-
-      <Container maxWidth="lg">
-          <a href="https://nextjs.org/learn" className="card">
-            <h3>Learn &rarr;</h3>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-      </Container>
-
-
-      <Container maxWidth="lg">
-
-        <a href="https://github.com/vercel/next.js/tree/master/examples" className="card" >
-          <h3>Examples &rarr;</h3>
-          <p>Discover and deploy boilerplate example Next.js projects.</p>
-        </a>
-      </Container>
-
-      <Container maxWidth="lg">
-
-        <a href="https://vercel.com/import?filter=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          className="card">
-              <h3>Deploy &rarr;</h3>
-            <p> Instantly deploy your Next.js site to a public URL with Vercel.</p>
-          </a>
-      </Container>
-            <Box border={1}>
-                <p>This is the inside of a box
-                </p>
-            </Box>
-
 
                 <Grid container spacing={3}>
                     <Grid item xs={6}>
@@ -190,37 +209,79 @@ export default function Home() {
                     </Grid>
                     <Grid item xs={6}>
                         <p align="center">Task Management</p>
-                        <Accordion>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="additional-actions1-content" id="additional-actions1-header">
-                                <FormControlLabel
-                                    aria-label="Acknowledge"
-                                    onClick={(event) => event.stopPropagation()}
-                                    onFocus={(event) => event.stopPropagation()}
-                                    control={<Checkbox />}
-                                /><Typography className={classes.heading}>Accordion 1</Typography>
+                        <Accordion >
+                            <AccordionSummary className={classes.accordion} expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
+                                <Typography>About this course</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
-                                <Typography> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex,  sit amet blandit leo lobortis eget.
+                                <Typography> This course is an introduction into the field of interactive prototyping with electronics. No prior experience in electronics are necessary since the lessons will teach you how to work with an Arduino Microcontroller. First the Arduino board itself will be introduced and the basics of how to set up and configure a microcontroller will be shown. Based on these techniques small examples of simple circuits will be explained. The goal of the course is to combine the skills of working with an Arduino with knowledge from a variety of backgrounds in order to realise prototyping projects with ease in the future.
                                 </Typography>
                             </AccordionDetails>
                         </Accordion>
-                        <Accordion>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
-                                <Typography className={classes.heading}>Accordion 2</Typography>
+                        <Accordion >
+                            <AccordionSummary className={classes.accordion} expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
+                                <Typography>Lessons</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
-                                <Typography> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget.
+                                <Typography>This course is structured as follows: First we will concentrate on naming the individual <Link href="#" onClick={() => handleDirectLink(0)} color="primary">Arduino Components</Link> and
+                                    explaining their functionality. With these set of components we will show how quick and easy it is to compose a <Link href="#" onClick={() => handleDirectLink(1)} color="primary">Basic Circuit</Link>.
+                                    For advanced circuits we will also show you some <Link href="#"  onClick={() => handleDirectLink(2)} color="primary">Additional Comonents</Link> that can be added to a circuit.
+                                    Lastly we will introduce into the basics of <Link href="#" onClick={() => handleDirectLink(3)} color="primary">Circuit Schematics</Link> and show you the basics on how to code with the <Link href="#" onClick={() => handleDirectLink(4)} color="primary">Arduino Software</Link>.
+                                    That will allow you to read instructions for different circuits and program and control your Arduino.
                                 </Typography>
                             </AccordionDetails>
                         </Accordion>
-                        <Accordion disabled>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel3a-content" id="panel3a-header">
-                                <Typography className={classes.heading}>Disabled Accordion</Typography>
-                            </AccordionSummary>
-                        </Accordion>
+                        <Box>
+                            <p></p>
+                        </Box>
+
+                        < Lesson activeStep={activeStep} sendDataToParent={sendDataToParent}/>
+
+                        <MobileStepper
+                            steps={maxSteps}
+                            position="static"
+                            variant="text"
+                            activeStep={activeStep}
+                            nextButton={
+                                <Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
+                                    Next
+                                    {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+                                </Button>
+                            }
+                            backButton={
+                                <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                                    {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+                                    Back
+                                </Button>
+                            }
+                        />
+                        <p></p>
+                        <p align="center">
+
+                            {open ? (<Button onClick={handleDrawerClose}>Close</Button>) :
+                                (<Button onClick={handleDrawerOpen}>Open Tasks</Button> ) }
+                        </p>
+                        <Slide direction="right" in={open} mountOnEnter unmountOnExit>
+                            <div>
+                                <Paper square elevation={0}>
+                                    <Typography align="center">Tasks</Typography>
+                                </Paper>
+
+                                <Image activeStep={activeStep}/>
+                                {/*<Accordion>
+                                    <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
+                                        <Typography>Task 2</Typography>
+                                    </AccordionSummary>
+                                    <AccordionDetails>
+                                        <Typography> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget.
+                                        </Typography>
+                                    </AccordionDetails>
+                                </Accordion>*/}
+                            </div>
+                        </Slide>
                     </Grid>
                 </Grid>
-                <Grid container spacing={3}>
+                {/*<Grid container spacing={3}>
                     <Grid item xs={6}>
                         <div className={classes.container}>
                             <Fade in={checked}>
@@ -233,6 +294,7 @@ export default function Home() {
                         </div>
                     </Grid>
                     <Grid item xs={6} style={{ width: 200, whiteSpace: 'nowrap'}}>
+                        <p align="center">Document Management</p>
                         <Box component="div" my={2} overflow="auto" bgcolor="background.paper" display="flex"
                              flexWrap="nowrap">
                             <Box component="div" my={2} m={4}>
@@ -336,82 +398,46 @@ export default function Home() {
                             Overflow Auto.
 
                         </Box>
+
                     </Grid>
-                </Grid>
+                </Grid>*/}
     </main>
 
       <footer>
     <Container maxWidth="sm">
         <h1 className="title" align="center">
             <Link href="/about/about">
-                <a>About</a>
+                About
             </Link>
          </h1>
+        <h1 className="title" align="center">
+        <Link href="/admin/tasks">
+            Tasks
+        </Link>
+    </h1>
         </Container>
       </footer>
           </Box>
-          <div className={classes.rootDrawer}>
-              <CssBaseline />
-              <AppBar position="fixed" className={classes.appBar}>
-                  <Toolbar>
-                      <Typography variant="h6" noWrap>
-                          Permanent drawer
-                      </Typography>
-                  </Toolbar>
-              </AppBar>
-              <Drawer
-                  className={classes.drawer}
-                  variant="permanent"
-                  classes={{
-                      paper: classes.drawerPaper,
-                  }}
-                  anchor="left"
-              >
-                  <div className={classes.toolbar} />
-                  <Divider />
-                  <List>
-                      {['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-                          <ListItem button key={text}>
-                              <ListItemText primary={text} />
-                          </ListItem>
-                      ))}
-                  </List>
-                  <Divider />
-                  <List>
-                      {['All mail', 'Trash', 'Spam'].map((text, index) => (
-                          <ListItem button key={text}>
-                              <ListItemText primary={text} />
-                          </ListItem>
-                      ))}
-                  </List>
-              </Drawer>
-              <main className={classes.content}>
-                  <div className={classes.toolbar} />
-                  <Typography paragraph>
-                      Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt
-                      ut labore et dolore magna aliqua. Rhoncus dolor purus non enim praesent elementum
-                      facilisis leo vel. Risus at ultrices mi tempus imperdiet. Semper risus in hendrerit
-                      gravida rutrum quisque non tellus. Convallis convallis tellus id interdum velit laoreet id
-                      donec ultrices. Odio morbi quis commodo odio aenean sed adipiscing. Amet nisl suscipit
-                      adipiscing bibendum est ultricies integer quis. Cursus euismod quis viverra nibh cras.
-                      Metus vulputate eu scelerisque felis imperdiet proin fermentum leo. Mauris commodo quis
-                      imperdiet massa tincidunt. Cras tincidunt lobortis feugiat vivamus at augue. At augue eget
-                      arcu dictum varius duis at consectetur lorem. Velit sed ullamcorper morbi tincidunt. Lorem
-                      donec massa sapien faucibus et molestie ac.
-                  </Typography>
-                  <Typography paragraph>
-                      Consequat mauris nunc congue nisi vitae suscipit. Fringilla est ullamcorper eget nulla
-                      facilisi etiam dignissim diam. Pulvinar elementum integer enim neque volutpat ac
-                      tincidunt. Ornare suspendisse sed nisi lacus sed viverra tellus. Purus sit amet volutpat
-                      consequat mauris. Elementum eu facilisis sed odio morbi. Euismod lacinia at quis risus sed
-                      vulputate odio. Morbi tincidunt ornare massa eget egestas purus viverra accumsan in. In
-                      hendrerit gravida rutrum quisque non tellus orci ac. Pellentesque nec nam aliquam sem et
-                      tortor. Habitant morbi tristique senectus et. Adipiscing elit duis tristique sollicitudin
-                      nibh sit. Ornare aenean euismod elementum nisi quis eleifend. Commodo viverra maecenas
-                      accumsan lacus vel facilisis. Nulla posuere sollicitudin aliquam ultrices sagittis orci a.
-                  </Typography>
-              </main>
-          </div>
+
+
+
       </div>
+
   )
+}
+
+export async function getServerSideProps(context) {
+    const url = db.ref('results');
+    const res = await fetch(url);
+    const data = await JSON.stringify(res);
+
+    if (!data) {
+        return {
+            notFound: true,
+        }
+    }
+
+    return {
+        props: {data}, // will be passed to the page component as props
+    }
 }
