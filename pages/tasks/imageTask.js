@@ -176,7 +176,7 @@ function Task(props) {
             {Object.keys(tasks).map((k,r) => {
                 if(JSON.stringify(tutorialSteps[props.activeStep].label).substring(1,JSON.stringify(tutorialSteps[props.activeStep].label).length-1) == JSON.stringify(tasks[image[r]].lesson).substring(1, JSON.stringify(tasks[image[r]].lesson).length - 1)) {
                     return <Accordion key={r} >
-                        <AccordionSummary className={ highlightColor ? classes.right : classes.wrong} expandIcon={<ExpandMoreIcon/>} aria-controls="additional-actions1-content"
+                        <AccordionSummary expandIcon={<ExpandMoreIcon/>} aria-controls="additional-actions1-content"
                                           id="additional-actions1-header">
                             <Typography>{JSON.stringify(tasks[image[r]].action).substring(1, JSON.stringify(tasks[image[r]].action).length - 1)}</Typography>
                         </AccordionSummary>
