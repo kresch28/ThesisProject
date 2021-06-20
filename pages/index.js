@@ -1,7 +1,8 @@
 import React, {useState, useEffect} from "react";
 import { firebase } from '../src/initFirebase'
-import { Lesson } from "./lessons/lessonComponent";
-import { Image } from "./tasks/imageTask";
+import Lesson  from "./lessons/lessonComponent";
+import Task from "./tasks/imageTask";
+
 
 
 import Head from 'next/head'
@@ -267,7 +268,7 @@ export default function Home(context) {
                                     <Typography align="center">Tasks</Typography>
                                 </Paper>
 
-                                <Image activeStep={activeStep}/>
+                                <Task activeStep={activeStep}/>
                                 {/*<Accordion>
                                     <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
                                         <Typography>Task 2</Typography>

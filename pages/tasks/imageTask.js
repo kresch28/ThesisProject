@@ -64,7 +64,7 @@ function SimpleDialog(props) {
     );
 }
 
-function Image(props) {
+function Task(props) {
 
     const classes = useStyles();
     const [tasks, setTasks] = useState("");
@@ -232,4 +232,4 @@ function Image(props) {
         )
     }
 
-    export { Image };
+ export default Task;

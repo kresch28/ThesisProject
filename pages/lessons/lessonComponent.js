@@ -139,4 +139,4 @@ function Lesson(props) {
 
 
 }
-export { Lesson };
+export default Lesson;
