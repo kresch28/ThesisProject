@@ -17,5 +17,10 @@
     "react-dom": "17.0.1",
     "react-material-ui-carousel": "^2.2.2",
     "react-unity-webgl": "^8.4.2"
+  },
+  "browser": {
+    "fs": false,
+    "path": false,
+    "os": false
   }
 }
