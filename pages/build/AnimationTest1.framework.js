@@ -2639,7 +2639,7 @@ function unityFramework(Module) {
         http.onerror = null;
         http.ontimeout = null;
         http.onabort = null;
-        delete http;
+        //delete http;
         wr.requestInstances[request] = null
     }
 
