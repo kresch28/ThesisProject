@@ -1,4 +1,15 @@
 import React, {useState, useEffect} from "react";
+import Unity, { UnityContext } from "react-unity-webgl";
+
+
+const unityContext = new UnityContext({
+    loaderUrl: './build/AnimationTest1.loader.js',
+    dataUrl: './build/AnimationTest1.data',
+    frameworkUrl: './build/AnimationTest1.framework.js',
+    codeUrl: './build/AnimationTest1.wasm',
+});
+
+
 import { firebase } from '../src/initFirebase'
 import Lesson  from "./lessons/lessonComponent";
 import Task from "./tasks/imageTask";
@@ -205,8 +216,14 @@ export default function Home(context) {
           </Container>
 
                 <Grid container spacing={3}>
-                    <Grid item xs={6}>
+                    <Grid item xs={6} style={{display: "flex"}}>
                         <p align="center">Simulation</p>
+                        <Unity unityContext={unityContext} style={{
+                            height: "75%",
+                            width: 800,
+                            border: "2px solid black",
+                            background: "grey",
+                        }}/>
                     </Grid>
                     <Grid item xs={6}>
                         <p align="center">Task Management</p>

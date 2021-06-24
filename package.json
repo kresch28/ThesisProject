@@ -15,6 +15,7 @@
     "next": "10.0.6",
     "react": "17.0.1",
     "react-dom": "17.0.1",
-    "react-material-ui-carousel": "^2.2.2"
+    "react-material-ui-carousel": "^2.2.2",
+    "react-unity-webgl": "^8.4.2"
   }
 }
