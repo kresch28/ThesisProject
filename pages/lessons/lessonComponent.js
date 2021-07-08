@@ -85,7 +85,13 @@ function Lesson(props) {
         console.log(allDone);
         setAllDone((prevProgress) => prevProgress +1)
         console.log(props.allDone);
-    }
+    };
+
+    /*const getUnityElement = (e) => {
+        console.log('here: ' + e.target);
+        console.log('here: ' + e.target.children[1].id)
+        props.sendUnityToParent(e.target.children[1].id)
+    }*/
 
     const [tasks, setTasks] = React.useState({})
     const [taskDescription, setTaskDescription] = React.useState({})
@@ -118,14 +124,15 @@ function Lesson(props) {
            {Object.keys(taskDescription).map( (k,r) => {
                if(JSON.stringify(tutorialSteps[props.activeStep].label).substring(1,JSON.stringify(tutorialSteps[props.activeStep].label).length-1) == JSON.stringify(taskDescription[tasks[r]]['lesson']).substring(1, JSON.stringify(taskDescription[tasks[r]]['lesson']).length - 1)) {
                    console.log('yes')
-               return <Accordion key={r}>
+               // return <Accordion key={r} onClick={getUnityElement}>
+                   return <Accordion key={r}>
                    <AccordionSummary className={classes.props} expandIcon={<ExpandMoreIcon/>}
-                                     aria-controls="panel2a-content" id="panel2a-header">
+                                     aria-controls="panel2a-content">
                        <FormControlLabel
                            aria-label="Acknowledge"
                            onClick={handleProgress}
                            control={<Checkbox />}/>
-                       <Typography>{JSON.stringify(taskDescription[tasks[r]]['task']).substring(1, JSON.stringify(taskDescription[tasks[r]]['task']).length - 1)}</Typography>
+                       <Typography id={r}>{JSON.stringify(taskDescription[tasks[r]]['task']).substring(1, JSON.stringify(taskDescription[tasks[r]]['task']).length - 1)}</Typography>
                    </AccordionSummary>
                    <AccordionDetails>
                        <Typography>{JSON.stringify(taskDescription[tasks[r]]['taskDescription']).substring(1, JSON.stringify(taskDescription[tasks[r]]['taskDescription']).length - 1)}</Typography>

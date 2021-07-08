@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from "react";
-import Unity, { UnityContext } from "react-unity-webgl";
+import Unity, { UnityContext, SendMessage } from "react-unity-webgl";
 
 
 const unityContext = new UnityContext({
@@ -7,6 +7,20 @@ const unityContext = new UnityContext({
     dataUrl: './build/AnimationTest1.data',
     frameworkUrl: './build/AnimationTest1.framework.js',
     codeUrl: './build/AnimationTest1.wasm',
+});
+
+const unityContext2 = new UnityContext({
+    loaderUrl: './build/AnimationTest2.loader.js',
+    dataUrl: './build/AnimationTest2.data',
+    frameworkUrl: './build/AnimationTest2.framework.js',
+    codeUrl: './build/AnimationTest2.wasm',
+});
+
+const unityContextController = new UnityContext({
+    loaderUrl: './build/AnimationControl.loader.js',
+    dataUrl: './build/AnimationControl.data',
+    frameworkUrl: './build/AnimationControl.framework.js',
+    codeUrl: './build/AnimationControl.wasm',
 });
 
 
@@ -159,6 +173,7 @@ export default function Home(context) {
             tasks: 3
         }
     ];
+
     const [activeStep, setActiveStep] = React.useState(0);
     const maxSteps = tutorialSteps.length;
 
@@ -175,13 +190,32 @@ export default function Home(context) {
     };
 
     const [allDone, setAllDone] = React.useState(false);
-    const sendDataToParent = (check) => { // the callback. Use a better name
+    const sendDataToParent = (check) => { //
         console.log(check);
         if(check == true) {
             handleDrawerOpen(true);
         }
     };
 
+    const unityAnimations = [
+        unityContext, unityContext2
+    ];
+    const [unityPlayer, setUnityPlayer] = React.useState(0);
+    const sendUnityToParent = (check) => { //
+        console.log(check)
+        console.log(unityAnimations[check-1])
+        setUnityPlayer(check);
+    };
+    const sendDataToUnity1 = () => {
+        console.log('here');
+        console.log(unityContextController);
+        unityContextController.send('Arduino_uno','ctrl', '1')
+    }
+    const sendDataToUnity2 = () => {
+        console.log('here');
+        console.log(unityContextController);
+        unityContextController.send('Arduino_uno','ctrl', '2')
+    }
 
     const data = db.ref().child("tasks").get().then((snapshot) => {
         if (snapshot.exists()) {
@@ -196,6 +230,15 @@ export default function Home(context) {
 
     console.log(data);
 
+    //const unityInstance = UnityLoader.instatiate('unityContainer', "./build/AnimationControl.loader.js", {onProgress: UnityProgress});
+    /*const turnOn = () => {
+        SendMessage('Arduino_uno', 'ctrl("1")');
+    };
+    const turnOff = () => {
+        SendMessage('Arduino_uno', 'ctrl("2")');
+
+    LOOK HERE https://www.npmjs.com/package/react-unity-webgl/v/6.3.1#calling-unity-scripts-functions-from-javascript-in-react
+    }*/
 
   return (
       <div>
@@ -216,14 +259,29 @@ export default function Home(context) {
           </Container>
 
                 <Grid container spacing={3}>
-                    <Grid item xs={6} style={{display: "flex"}}>
-                        <p align="center">Simulation</p>
-                        <Unity unityContext={unityContext} style={{
+                    <Grid item xs={6} style={{display: "flex", height: 600}}>
+                        {/*<p align="center">Simulation</p>*/}
+                        <Unity unityContext={unityContextController} style={{
                             height: "75%",
                             width: 800,
                             border: "2px solid black",
                             background: "grey",
                         }}/>
+                        <Button variant="outlined"  onClick={sendDataToUnity1}>
+                            Show
+                        </Button>
+                        <Button variant="outlined"  onClick={sendDataToUnity2}>
+                            Hide
+                        </Button>
+                        <p>{Object.keys(unityAnimations).map( (k,r) => {
+                            if(unityPlayer-1 == r) {
+                                <Unity unityContext={unityAnimations[r]} style={{
+                                    height: "75%",
+                                    width: 800,
+                                    border: "2px solid black",
+                                    background: "grey",
+                                }}/>                            }
+                        })}</p>
                     </Grid>
                     <Grid item xs={6}>
                         <p align="center">Task Management</p>
@@ -253,7 +311,7 @@ export default function Home(context) {
                             <p></p>
                         </Box>
 
-                        < Lesson activeStep={activeStep} sendDataToParent={sendDataToParent}/>
+                        < Lesson activeStep={activeStep} sendDataToParent={sendDataToParent} sendUnityToParent={sendUnityToParent}/>
 
                         <MobileStepper
                             steps={maxSteps}

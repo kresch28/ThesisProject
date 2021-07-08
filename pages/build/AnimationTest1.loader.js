@@ -232,4 +232,4 @@ function createUnityInstance(e, r, n) {
         }), u()) : r("Your browser does not support WebAssembly.") : r("Your browser does not support WebGL.")
     })
 }
-
+export default createUnityInstance()
