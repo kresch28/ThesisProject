@@ -16271,5 +16271,3 @@ function unityFramework(Module) {
 
 
 }
-
-export default unityFramework;

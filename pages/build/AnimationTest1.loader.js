@@ -233,4 +233,3 @@ function createUnityInstance(e, r, n) {
     })
 }
 
-export default createUnityInstance;
