@@ -43,6 +43,11 @@ export default function Tasks() {
     const [amount, setAmount] = React.useState([])
     const id = '-MXkkPPl0o5BzinAcbrN';
 
+    const [loader, setLoader] = React.useState('')
+    const [dataUrl, setDataUrl] = React.useState('')
+    const [framework, setFramework] = React.useState('')
+    const [codeUrl, setcodeUrl] = React.useState('')
+
 
     const setMultipleChoice = (e) => {
         console.log(e);
@@ -121,6 +126,27 @@ export default function Tasks() {
                     <textarea cols="50" rows="8" name={'task'} value={task} onChange={(e) => setTask(e.target.value)}/>
                     <p>Current Task: {JSON.stringify(task)}</p>
                     <Button color="primary" type={"submit"}>Create Task</Button>
+                </form>
+            </Container>
+
+            <Container maxWidth="lg">
+                <h3>Image for Lesson </h3>
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    const tasksRef = db.ref(`media`);
+                    const newMediaRef = tasksRef.push();
+                    newMediaRef.set({
+                        lesson: lesson,
+                        link: link,
+                    });
+                }}>
+                    <label>Lesson:
+                        <select name={lesson} size="1" onChange={handleChange}>
+                            {lessonInfos.map((l,k) => <option key={k} value={l.label}>{l.label}</option>) }
+                        </select>
+                    </label>
+                    <input name={'link'} value={link} onChange={(e) => setLink(e.target.value)}/>
+                    <Button color="primary" type={"submit"}>Add Media</Button>
                 </form>
             </Container>
 
@@ -278,6 +304,33 @@ export default function Tasks() {
                     <Button color="primary" type={"submit"}>Create Question</Button>
                     </form>
                     }
+            </Container>
+            <Container maxWidth="lg">
+                <h3>Simulations </h3>
+                <form onSubmit={(e) => {
+                    e.preventDefault();
+                    const tasksRef = db.ref(`simulations`);
+                    const newMediaRef = tasksRef.push();
+                    newMediaRef.set({
+                        loader: loader,
+                        dataUrl: dataUrl,
+                        framework: framework,
+                        codeUrl: codeUrl                    });
+                }}>
+                    <label>Loader:
+                        <input name={'link'} value={loader} onChange={(e) => setLink(e.target.value)}/>
+                    </label>
+                    <label>Data:
+                        <input name={'link'} value={dataUrl} onChange={(e) => setLink(e.target.value)}/>
+                    </label>
+                    <label>Framework:
+                        <input name={'link'} value={framework} onChange={(e) => setLink(e.target.value)}/>
+                    </label>
+                    <label>Code:
+                        <input name={'link'} value={codeUrl} onChange={(e) => setLink(e.target.value)}/>
+                    </label>
+                    <Button color="primary" type={"submit"}>Add Simulation</Button>
+                </form>
             </Container>
             <h2>
                 <Link href="/">

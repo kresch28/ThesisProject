@@ -1,33 +1,111 @@
-import React, {useState, useEffect} from "react";
+import React, {useState, useEffect, useRef, lazy, Suspense } from "react";
 import Unity, { UnityContext, SendMessage } from "react-unity-webgl";
+import axios from 'axios'
 
 
-const unityContext = new UnityContext({
-    loaderUrl: './build/AnimationTest1.loader.js',
-    dataUrl: './build/AnimationTest1.data',
-    frameworkUrl: './build/AnimationTest1.framework.js',
-    codeUrl: './build/AnimationTest1.wasm',
-});
-
+/*const unityContext1 = new UnityContext({
+        loaderUrl: './build/AnimationTest1.loader.js',
+        dataUrl: './build/AnimationTest1.data',
+        frameworkUrl: './build/AnimationTest1.framework.js',
+        codeUrl: './build/AnimationTest1.wasm',
+    });
+function GetUnityContext() {
+    return (
+        <Unity unityContext={unityContext1} style={{
+            height: "75%",
+            width: 800,
+            background: "white",}}/>
+    )
+}
 const unityContext2 = new UnityContext({
-    loaderUrl: './build/AnimationTest2.loader.js',
-    dataUrl: './build/AnimationTest2.data',
-    frameworkUrl: './build/AnimationTest2.framework.js',
-    codeUrl: './build/AnimationTest2.wasm',
+        loaderUrl: './build/AnimationTest2.loader.js',
+        dataUrl: './build/AnimationTest2.data',
+        frameworkUrl: './build/AnimationTest2.framework.js',
+        codeUrl: './build/AnimationTest2.wasm',
+    });
+function GetUnityContext1() {
+    return (
+        <Unity unityContext={unityContext2} style={{
+            height: "75%",
+            width: 800,
+            border: "2px solid black",
+            background: "grey",}}/>
+    )
+}
+const unityContext3 = new UnityContext({
+        loaderUrl: './build/AnimationTest3.loader.js',
+        dataUrl: './build/AnimationTest3.data',
+        frameworkUrl: './build/AnimationTest3.framework.js',
+        codeUrl: './build/AnimationTest3.wasm',
+    });
+function GetUnityContext2() {
+    return (
+        <Unity unityContext={unityContext3} style={{
+            height: "75%",
+            width: 800,
+            border: "2px solid black",
+            background: "grey",}}/>
+    )
+}
+const unityContext4 = new UnityContext(
+    {loaderUrl: './build/AnimationTest4.loader.js',
+        dataUrl: './build/AnimationTest4.data',
+        frameworkUrl: './build/AnimationTest4.framework.js',
+        codeUrl: './build/AnimationTest4.wasm',
+    });
+function GetUnityContext3() {
+    return (
+        <Unity unityContext={unityContext4} style={{
+            height: "75%",
+            width: 800,
+            border: "2px solid black",
+            background: "grey",}}/>
+    )
+}
+const unityContext5 = new UnityContext({
+        loaderUrl: './build/AnimationTest5.loader.js',
+        dataUrl: './build/AnimationTest5.data',
+        frameworkUrl: './build/AnimationTest5.framework.js',
+        codeUrl: './build/AnimationTest5.wasm',
+    });
+function GetUnityContext4() {
+    return (
+        <Unity unityContext={unityContext5} style={{
+            height: "75%",
+            width: 800,
+            border: "2px solid black",
+            background: "grey",}}/>
+    )
+}
+const unityContext6 = new UnityContext({
+    loaderUrl: './build/AnimationTest6.loader.js',
+    dataUrl: './build/AnimationTest6.data',
+    frameworkUrl: './build/AnimationTest6.framework.js',
+    codeUrl: './build/AnimationTest6.wasm',
 });
+function GetUnityContext5() {
+    return (
+        <Unity unityContext={unityContext6} style={{
+            height: "75%",
+            width: 800,
+            border: "2px solid black",
+            background: "grey",}}/>
+    )
+}
 
 const unityContextController = new UnityContext({
     loaderUrl: './build/AnimationControl.loader.js',
     dataUrl: './build/AnimationControl.data',
     frameworkUrl: './build/AnimationControl.framework.js',
     codeUrl: './build/AnimationControl.wasm',
-});
+});*/
+
 
 
 import { firebase } from '../src/initFirebase'
 import Lesson  from "./lessons/lessonComponent";
 import Task from "./tasks/imageTask";
-
+//import Simulation from "./data/unity";
 
 
 import Head from 'next/head'
@@ -57,6 +135,7 @@ let theme = createMuiTheme();
 theme.spacing(2);
 
 const db = firebase.database();
+const storage = firebase.storage();
 
 const drawerWidth = 240;
 
@@ -122,6 +201,9 @@ const useStyles = makeStyles((theme) => ({
 
 
 
+export const CounterContext = React.createContext({val: 0, updateCounter: () => {}, });
+
+
 export default function Home(context) {
 
     // Pass the props as the first argument of useStyles()
@@ -179,6 +261,7 @@ export default function Home(context) {
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        handleDrawerClose()
     };
 
     const handleBack = () => {
@@ -190,21 +273,37 @@ export default function Home(context) {
     };
 
     const [allDone, setAllDone] = React.useState(false);
+    const [reset, setReset] = React.useState(false);
+    const myRef = useRef();
+
     const sendDataToParent = (check) => { //
-        console.log(check);
+        console.log(check)
         if(check == true) {
             handleDrawerOpen(true);
+            /*const timer = setTimeout(() => {
+                console.log(myRef.current);
+                myRef.current.scrollIntoView({ behavior: 'smooth' })
+            }, 500);
+            return timer;*/
         }
     };
+    const sendStatusToParent = (check) => {
+        if(check == true) {
+            setAllDone(true);
+            setReset(true);
+            setCounter(0);
+        }
+    }
 
-    const unityAnimations = [
-        unityContext, unityContext2
-    ];
+    /*const unityAnimations = [
+        unityContext, unityContext2, unityContext3, unityContext4, unityContext5
+    ];*/
     const [unityPlayer, setUnityPlayer] = React.useState(0);
-    const sendUnityToParent = (check) => { //
-        console.log(check)
-        console.log(unityAnimations[check-1])
-        setUnityPlayer(check);
+    const sendUnityToParent = (r) => { //
+        console.log('Number of Simulation ' + r)
+        setUnityPlayer(r)
+        /*console.log(unityAnimations[check-1])
+        setUnityPlayer(check);*/
     };
     const sendDataToUnity1 = () => {
         console.log('here');
@@ -219,7 +318,7 @@ export default function Home(context) {
 
     const data = db.ref().child("tasks").get().then((snapshot) => {
         if (snapshot.exists()) {
-            console.log(snapshot.val())
+            //console.log(snapshot.val())
         }
         else {
         console.log("No data available");
@@ -228,7 +327,92 @@ export default function Home(context) {
         console.error(error);
     });
 
-    console.log(data);
+    const [unityOutput, setUnityOutput] = React.useState();
+
+    const updateCounter = () => {
+        setCounter(counter + 1)
+        console.log(counter);
+    }
+    const [counter, setCounter] = React.useState(0);
+
+    /*const nextSimulation = () => {
+        setCounter((prevCounter) => prevCounter +1 )
+    }*/
+    const [simulationMedia, setSimulationMedia] = React.useState({});
+    const [isLoaded, setIsLoaded] = useState(false);
+
+
+    const [unityAnimations, setUnityAnimations] = React.useState({});
+    const [unityVar, setUnityVar] = React.useState();
+    const [contextUnity, setContextUnity] = React.useState();
+
+    const getUnityContext = () => {
+        console.log(context);
+        const contextR = new UnityContext(
+            {
+                loaderUrl: context.loader,
+                dataUrl: context.dataUrl,
+                frameworkUrl: context.framework,
+                codeUrl: context.codeUrl,
+            }
+        )
+        return (
+            <Unity unityContext={contextR} style={{
+                height: "75%",
+                width: 800,
+                background: "white",}}/>
+        )
+    }
+
+    const [loaderUrl, setLoaderUrl] = React.useState('');
+    const [dataUrl, setDataUrl] = React.useState('');
+    const [frameworkUrl, setFrameworkUrl] = React.useState('');
+    const [codeUrl, setCodeUrl] = React.useState('');
+
+    useEffect(async () => {
+        if(allDone == true) {
+
+        }
+        const ref = db.ref();
+        await ref.child("media").get().then((snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                //console.log(data);
+                setSimulationMedia(data);
+            } else {
+                console.log("No data available");
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+
+        await ref.child("simulations").get().then((snapshot) => {
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                Object.keys(data).map((k,r) => {
+                    if(unityPlayer == r) {
+                        console.log(JSON.stringify(data[k]) + " " + r);
+                        console.log(data[k].loader);
+                        setUnityAnimations({context : data[k]})
+
+                        const thisContext = new UnityContext({
+                            loaderUrl: data[k].loader,
+                            dataUrl: data[k].dataUrl,
+                            frameworkUrl: data[k].framework,
+                            codeUrl: data[k].codeUrl,
+                        });
+                        console.log(thisContext);
+                        setContextUnity(thisContext)
+                    }
+                })
+            } else {
+                console.log("No data available");
+            }
+        }).catch((error) => {
+            console.error(error);
+        });
+    }, []);
+
 
     //const unityInstance = UnityLoader.instatiate('unityContainer', "./build/AnimationControl.loader.js", {onProgress: UnityProgress});
     /*const turnOn = () => {
@@ -240,48 +424,141 @@ export default function Home(context) {
     LOOK HERE https://www.npmjs.com/package/react-unity-webgl/v/6.3.1#calling-unity-scripts-functions-from-javascript-in-react
     }*/
 
-  return (
-      <div>
-          <Box className={classes.props} border={5} borderColor="orange" m={3} p={2}>
-        <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
-        </Head>
+    const [start, setStart] = React.useState(false);
+    const startLesson = () => {
+        setStart(true);
+        updateCounter();
+    };
 
-        <main>
-            <Container maxWidth="sm">
-                <h1 align="center">
-                Read{' '}
-                <Link href="/posts/first-post" color="inherit">
-                    this page!
-                </Link>
-                </h1>
-          </Container>
+
+
+    return (
+      <div>
+          <CounterContext.Provider value={{counter, updateCounter}}>
+          <Box className={classes.props} border={5} borderColor="orange" m={3} p={2}>
+            <Head>
+            <title>Create Next App</title>
+            <link rel="icon" href="/favicon.ico" />
+            </Head>
+
+            <main>
+                <Container maxWidth="sm">
+                    <h1 align="center">
+                    Read{' '}
+                    <Link href="/posts/first-post" color="inherit">
+                        this page!
+                    </Link>
+                    </h1>
+              </Container>
 
                 <Grid container spacing={3}>
                     <Grid item xs={6} style={{display: "flex", height: 600}}>
-                        {/*<p align="center">Simulation</p>*/}
-                        <Unity unityContext={unityContextController} style={{
-                            height: "75%",
-                            width: 800,
-                            border: "2px solid black",
-                            background: "grey",
-                        }}/>
-                        <Button variant="outlined"  onClick={sendDataToUnity1}>
+                        <div>
+                            {Object.keys(simulationMedia).map( (key,r) => {
+                                if(JSON.stringify(tutorialSteps[activeStep].label).substring(1,JSON.stringify(tutorialSteps[activeStep].label).length-1) == JSON.stringify(simulationMedia[key].lesson).substring(1, JSON.stringify(simulationMedia[key].lesson).length - 1)) {
+
+                                    return (<div key={r}>
+                                        <img style={{width: '100%'}} src={JSON.stringify(simulationMedia[key].link).substring(1, JSON.stringify(simulationMedia[key].link).length - 1)}/>
+                                    </div> )
+                                }
+                                else {
+                                    if(start) {
+                                        return (
+                                            <div>{/*
+                                                { unityPlayer == 0 ?
+                                                    <p style={{margin: "40px"}}>Read the introduction of the lesson and work your way trough the steps of the lesson by checking them of</p> :
+                                                    <p></p>}
+                                                { unityPlayer == 1 ?
+                                                    <div style={{visibility: isLoaded ? "visible" : "hidden", position: 'absolute'}}>
+                                                        <Suspense fallback={<p>Model loading...</p>}>
+                                                            <GetUnityContext />
+                                                        </Suspense>
+                                                    </div> :
+                                                <p></p>}
+                                                { unityPlayer == 2 ?
+                                                    <div style={{position: 'absolute'}}>
+                                                        <Suspense fallback={<p>Model loading...</p>}>
+                                                            <GetUnityContext1 />
+                                                        </Suspense>
+                                                    </div> :
+                                                    <p></p>}
+                                                { unityPlayer == 3 ?
+                                                    <div style={{position: 'absolute'}}>
+                                                        <Suspense fallback={<p>Model loading...</p>}>
+                                                            <GetUnityContext2 />
+                                                        </Suspense>
+                                                    </div> :
+                                                    <p></p>}
+                                                { unityPlayer == 4 ?
+                                                    <div style={{position: 'absolute'}}>
+                                                        <Suspense fallback={<p>Model loading...</p>}>
+                                                            <GetUnityContext3 />
+                                                        </Suspense>
+                                                    </div> :
+                                                    <p></p>}
+                                                { unityPlayer == 5 ?
+                                                    <div style={{position: 'absolute'}}>
+                                                        <Suspense fallback={<p>Model loading...</p>}>
+                                                            <GetUnityContext5 />
+                                                        </Suspense>
+                                                    </div> :
+                                                    <p></p>}
+                                                { unityPlayer == 6 ?
+                                                    <div style={{position: 'absolute'}}>
+                                                        <Suspense fallback={<p>Model loading...</p>}>
+                                                            <GetUnityContext4 />
+                                                        </Suspense>
+                                                    </div> :
+                                                    <p></p>}*/}
+                                                    <div style={{position: "absolute"}}>
+                                                        <Suspense fallback={<p>Model loading...</p>}>
+                                                            <Unity unityContext={contextUnity} style={{
+                                                                height: "75%",
+                                                                width: 800,
+                                                                border: "2px solid black",
+                                                                background: "grey",}}/>
+                                                        </Suspense>
+                                                    </div>
+                                                {/*<div style={{position: 'absolute'}}>
+                                                    <Suspense fallback={<p>Model loading...</p>}>
+                                                        <GetUnityContext4 />
+                                                    </Suspense>
+                                                </div>
+                                                <div style={{position: 'absolute'}}>
+                                                    <Suspense fallback={<p>Model loading...</p>}>
+                                                        <GetUnityContext3 />
+                                                    </Suspense>
+                                                </div>
+                                                <div style={{position: 'absolute'}}>
+                                                    <Suspense fallback={<p>Model loading...</p>}>
+                                                        <GetUnityContext2 />
+                                                    </Suspense>
+                                                </div>
+                                                <div style={{position: 'absolute'}}>
+                                                    <Suspense fallback={<p>Model loading...</p>}>
+                                                        <GetUnityContext1 />
+                                                    </Suspense>
+                                                </div>
+                                                <div style={{position: 'absolute'}}>
+                                                    <Suspense fallback={<p>Model loading...</p>}>
+                                                        <GetUnityContext />
+                                                    </Suspense>
+                                                </div>*/}
+                                            </div>
+                                        )
+                                    }
+                                }
+
+                                }
+                            )}
+                        </div>
+
+                        {/*<Button variant="outlined"  onClick={sendDataToUnity1}>
                             Show
                         </Button>
                         <Button variant="outlined"  onClick={sendDataToUnity2}>
                             Hide
-                        </Button>
-                        <p>{Object.keys(unityAnimations).map( (k,r) => {
-                            if(unityPlayer-1 == r) {
-                                <Unity unityContext={unityAnimations[r]} style={{
-                                    height: "75%",
-                                    width: 800,
-                                    border: "2px solid black",
-                                    background: "grey",
-                                }}/>                            }
-                        })}</p>
+                        </Button>*/}
                     </Grid>
                     <Grid item xs={6}>
                         <p align="center">Task Management</p>
@@ -307,11 +584,14 @@ export default function Home(context) {
                                 </Typography>
                             </AccordionDetails>
                         </Accordion>
+                        <p></p>
                         <Box>
-                            <p></p>
+                            <Button variant="outlined" color="primary" onClick={startLesson} >
+                                Start Lesson
+                            </Button>
                         </Box>
-
-                        < Lesson activeStep={activeStep} sendDataToParent={sendDataToParent} sendUnityToParent={sendUnityToParent}/>
+                        <p></p>
+                        < Lesson activeStep={activeStep} sendDataToParent={sendDataToParent} sendUnityToParent={sendUnityToParent} reset={reset}/>
 
                         <MobileStepper
                             steps={maxSteps}
@@ -319,7 +599,7 @@ export default function Home(context) {
                             variant="text"
                             activeStep={activeStep}
                             nextButton={
-                                <Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1}>
+                                <Button size="small" onClick={handleNext} disabled={activeStep === maxSteps - 1 || allDone !== true}>
                                     Next
                                     {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
                                 </Button>
@@ -331,19 +611,18 @@ export default function Home(context) {
                                 </Button>
                             }
                         />
-                        <p></p>
-                        <p align="center">
+                        {/*<p align="center">
 
                             {open ? (<Button onClick={handleDrawerClose}>Close</Button>) :
                                 (<Button onClick={handleDrawerOpen}>Open Tasks</Button> ) }
-                        </p>
+                        </p>*/}
                         <Slide direction="right" in={open} mountOnEnter unmountOnExit>
                             <div>
                                 <Paper square elevation={0}>
-                                    <Typography align="center">Tasks</Typography>
+                                    <h2 align="center">Questions</h2>
                                 </Paper>
 
-                                <Task activeStep={activeStep}/>
+                                <Task activeStep={activeStep} sendStatusToParent={sendStatusToParent} reset={reset}/>
                                 {/*<Accordion>
                                     <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
                                         <Typography>Task 2</Typography>
@@ -357,146 +636,25 @@ export default function Home(context) {
                         </Slide>
                     </Grid>
                 </Grid>
-                {/*<Grid container spacing={3}>
-                    <Grid item xs={6}>
-                        <div className={classes.container}>
-                            <Fade in={checked}>
-                                <Paper elevation={4} className={classes.paper}>
-                                    <svg className={classes.svg}>
-                                        <polygon points="0,100 50,00, 100,100" className={classes.polygon} />
-                                    </svg>
-                                </Paper>
-                            </Fade>
-                        </div>
-                    </Grid>
-                    <Grid item xs={6} style={{ width: 200, whiteSpace: 'nowrap'}}>
-                        <p align="center">Document Management</p>
-                        <Box component="div" my={2} overflow="auto" bgcolor="background.paper" display="flex"
-                             flexWrap="nowrap">
-                            <Box component="div" my={2} m={4}>
-                                    <Typography className={classes.title} color="textSecondary" gutterBottom>
-                                        Word of the Day
-                                    </Typography>
-                                    <Typography variant="h5" component="h2">
-                                        <FormControlLabel
-                                            control={<Switch checked={checked} onChange={handleChange} />}
-                                            label="Show"
-                                        />
-                                    </Typography>
-                                    <Typography className={classes.pos} color="textSecondary">
-                                        adjective
-                                    </Typography>
-                                    <Typography variant="body2" component="p">
-                                        well meaning and kindly.
-                                        <br />
-                                        {'"a benevolent smile"'}
-                                    </Typography>
-                            </Box>
-                            <Box component="div" my={2} m={4}>
-                                    <Typography className={classes.title} color="textSecondary" gutterBottom>
-                                        Word of the Day
-                                    </Typography>
-                                    <Typography variant="h5" component="h2">
-                                        <FormControlLabel
-                                            control={<Switch checked={checked} onChange={handleChange} />}
-                                            label="Show"
-                                        />
-                                    </Typography>
-                                    <Typography className={classes.pos} color="textSecondary">
-                                        adjective
-                                    </Typography>
-                                    <Typography variant="body2" component="p">
-                                        well meaning and kindly.
-                                        <br />
-                                        {'"a benevolent smile"'}
-                                    </Typography>
-                            </Box>
-                            <Box component="div" my={2} m={4}>
-                                    <Typography className={classes.title} color="textSecondary" gutterBottom>
-                                        Word of the Day
-                                    </Typography>
-                                    <Typography variant="h5" component="h2">
-                                        <FormControlLabel
-                                            control={<Switch checked={checked} onChange={handleChange} />}
-                                            label="Show"
-                                        />
-                                    </Typography>
-                                    <Typography className={classes.pos} color="textSecondary">
-                                        adjective
-                                    </Typography>
-                                    <Typography variant="body2" component="p">
-                                        well meaning and kindly.
-                                        <br />
-                                        {'"a benevolent smile"'}
-                                    </Typography>
-                            </Box>
-                            <Box component="div" my={2} m={4}>
-                                    <Typography className={classes.title} color="textSecondary" gutterBottom>
-                                        Word of the Day
-                                    </Typography>
-                                    <Typography variant="h5" component="h2">
-                                        <FormControlLabel
-                                            control={<Switch checked={checked} onChange={handleChange} />}
-                                            label="Show"
-                                        />
-                                    </Typography>
-                                    <Typography className={classes.pos} color="textSecondary">
-                                        adjective
-                                    </Typography>
-                                    <Typography variant="body2" component="p">
-                                        well meaning and kindly.
-                                        <br />
-                                        {'"a benevolent smile"'}
-                                    </Typography>
-                            </Box>
-                            <Box component="div" my={2} m={4}>
-                                    <Typography className={classes.title} color="textSecondary" gutterBottom>
-                                        Word of the Day
-                                    </Typography>
-                                    <Typography variant="h5" component="h2">
-                                        <FormControlLabel
-                                            control={<Switch checked={checked} onChange={handleChange} />}
-                                            label="Show"
-                                        />
-                                    </Typography>
-                                    <Typography className={classes.pos} color="textSecondary">
-                                        adjective
-                                    </Typography>
-                                    <Typography variant="body2" component="p">
-                                        well meaning and kindly.
-                                        <br />
-                                        {'"a benevolent smile"'}
-                                    </Typography>
-                            </Box>
-                            Overflow Auto.
-                            Overflow Auto.
-                            Overflow Auto.
-                            Overflow Auto.
+            </main>
 
-                        </Box>
-
-                    </Grid>
-                </Grid>*/}
-    </main>
-
-      <footer>
-    <Container maxWidth="sm">
-        <h1 className="title" align="center">
-            <Link href="/about/about">
-                About
-            </Link>
-         </h1>
-        <h1 className="title" align="center">
-        <Link href="/admin/tasks">
-            Tasks
-        </Link>
-    </h1>
-        </Container>
-      </footer>
+            <footer>
+                <Container maxWidth="sm">
+                    <p ref={myRef}></p>
+                    <h1 className="title" align="center">
+                        <Link href="/about/about">
+                            About
+                        </Link>
+                     </h1>
+                    <h1 className="title" align="center">
+                        <Link href="/admin/tasks">
+                            Tasks
+                        </Link>
+                    </h1>
+                    </Container>
+            </footer>
           </Box>
-
-
-
+          </CounterContext.Provider>
       </div>
 
   )

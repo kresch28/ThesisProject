@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { firebase } from '../../src/initFirebase'
 import axios from 'axios';
+import { CounterContext } from '../index'
 
 const db = firebase.database();
 
@@ -76,16 +77,8 @@ function Lesson(props) {
 
     const [allDone, setAllDone] = React.useState(1);
 
-    const handleProgress = () => {
-        if(allDone == tutorialSteps[props.activeStep].tasks) {
-            props.sendDataToParent(true);
-            console.log('done');
-        }
-        console.log(tutorialSteps[props.activeStep].tasks);
-        console.log(allDone);
-        setAllDone((prevProgress) => prevProgress +1)
-        console.log(props.allDone);
-    };
+    const [expanded, setExpanded] = React.useState(2);
+
 
     /*const getUnityElement = (e) => {
         console.log('here: ' + e.target);
@@ -95,12 +88,30 @@ function Lesson(props) {
 
     const [tasks, setTasks] = React.useState({})
     const [taskDescription, setTaskDescription] = React.useState({})
+    const { counter, updateCounter } = React.useContext(CounterContext);
+
+
+    const openSimulation = (r) => {
+        props.sendUnityToParent(r);
+    }
+
+    if(counter == tutorialSteps[props.activeStep].tasks+1) {
+        props.sendDataToParent(true);
+        console.log('done')
+    }
+
     useEffect(async () => {
+        if(props.reset == true) {
+            setAllDone(1);
+            setExpanded(2);
+        };
+        console.log(counter);
         const ref = db.ref();
         await ref.child("tasks").get().then((snapshot) => {
             if (snapshot.exists()) {
                 setTaskDescription(snapshot.val());
                 const data = snapshot.val();
+                //console.log(data);
                 setTasks(Object.keys(data));
 
             } else {
@@ -117,20 +128,25 @@ function Lesson(props) {
         return null;
     }
 
+
+
+
    return (
+       <CounterContext.Consumer>
+           {({counter, updateCounter}) => (
        <Box>
        <Paper square elevation={0}>
        </Paper>
            {Object.keys(taskDescription).map( (k,r) => {
                if(JSON.stringify(tutorialSteps[props.activeStep].label).substring(1,JSON.stringify(tutorialSteps[props.activeStep].label).length-1) == JSON.stringify(taskDescription[tasks[r]]['lesson']).substring(1, JSON.stringify(taskDescription[tasks[r]]['lesson']).length - 1)) {
-                   console.log('yes')
-               // return <Accordion key={r} onClick={getUnityElement}>
-                   return <Accordion key={r}>
+
+               return <Accordion key={r} onClick={() => openSimulation(r)}>
+                   {/*return <Accordion key={r} expanded={expanded === r+2 || expanded == true}>*/}
                    <AccordionSummary className={classes.props} expandIcon={<ExpandMoreIcon/>}
                                      aria-controls="panel2a-content">
                        <FormControlLabel
                            aria-label="Acknowledge"
-                           onClick={handleProgress}
+                           onClick={updateCounter}
                            control={<Checkbox />}/>
                        <Typography id={r}>{JSON.stringify(taskDescription[tasks[r]]['task']).substring(1, JSON.stringify(taskDescription[tasks[r]]['task']).length - 1)}</Typography>
                    </AccordionSummary>
@@ -142,6 +158,8 @@ function Lesson(props) {
                }
            )}
        </Box>
+           )}
+       </CounterContext.Consumer>
    )
 
 

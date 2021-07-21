@@ -35,11 +35,13 @@ const useStyles = makeStyles((theme) => ({
     props: {
     backgroundColor: 'orange',
 },
-    wrong: {
-        backgroundColor: 'red'
+    wrong:{
+        border: '4px solid',
+        borderColor: 'red'
     },
     right: {
-        backgroundColor: 'green'
+        border: '4px',
+        borderColor: 'green'
     }
 }));
 
@@ -67,14 +69,18 @@ function SimpleDialog(props) {
 function Task(props) {
 
     const classes = useStyles();
+    //Tasks: TODO
     const [tasks, setTasks] = useState("");
+    //Images: TODO
     const [image, setImage] = useState("");
     const [imageUrl, setImageUrl] = useState([]);
 
+    //Lessons and number of tasks
     const tutorialSteps = [
         {
             label: 'Lesson 1',
-            tasks: 7
+            tasks: 7,
+            questions: 3,
         },
         {
             label: 'Lesson 2',
@@ -90,10 +96,14 @@ function Task(props) {
         }
     ];
 
+    //status if question is open/available
     const [open, setOpen] = React.useState(false);
+    //hint if available in DB
     const [hint, setHint] = React.useState(0);
+    //TODO
     const [hintInactive, setHintInactive] = React.useState('primary');
 
+    //Allowed clicks on hint
     const handleClickOpen = () => {
         setHint((prevHint) => prevHint +1)
         if(hint < 3) {
@@ -104,20 +114,36 @@ function Task(props) {
         }
     };
 
+    //close Question
     const handleClose = () => {
         setOpen(false);
     };
 
+    //Value that has been choosen as possible answer
     const [value, setValue] = React.useState('');
+    //TODO
     const [error, setError] = React.useState(false);
+    //counter increases when going to next question
     const [counter, setCounter] = React.useState(0);
-    const [img, setImg] = React.useState('');
+    /*//Which lesson is active
+    const [page, setPage] = React.useState(0);
+    //TODO
+    const [img, setImg] = React.useState('');*/
 
+    //Helper Text if answer was correct
     const [helperText, setHelperText] = React.useState('');
+    //Actual answer from DB
     const [answer, setAnswer] = React.useState('');
+    //Highlight question after answer validation
     const [highlightColor, setHighlightColor] = React.useState(0);
-    const [clicked, setClicked] = React.useState(false)
+    //marks if question has been done/clicked
+    const [clicked, setClicked] = React.useState(false);
+    //How many answers have been answered - statistics or checking if next lesson should be available
+    const [answered, setAnswered] = React.useState(0);
+    const [answeredInfo, setAnsweredInfo] = React.useState('');
 
+    //register Answer Event and set the value
+    //first check if radio button or inner text is value
     const handleChange = (event) => {
         if(event.target.value) {
             setValue(event.target.value);
@@ -129,38 +155,47 @@ function Task(props) {
 
     };
 
+    //Validation Process
+    //right answer if answer of DB element with the current counter is the same
+    //  increse counter -
     const handleSubmit = (event) => {
-        setHelperText('')
+        props.handleQuestions
         event.preventDefault();
-        console.log(typeof (value));
-        console.log(typeof (answer[counter]));
-        console.log(answer[counter].toString())
         if (value == answer[counter].toString()) {
-                setCounter((prevCounter) => prevCounter + 1);
                 setHelperText('Answer is right');
+                setCounter((prevCounter) => prevCounter + 1);
+                setAnswered((prevNum) => prevNum + 1);
                 setClicked(true)
                 setHighlightColor(true);
+
+                if(counter == tutorialSteps[props.activeStep].questions-1) {
+                    console.log('next lesson')
+                    props.sendStatusToParent(true);
+                    setAnsweredInfo('You have answered all of the questions of this lesson. Press Next to go to the next lesson')
+                }
             }
             else {
                 setHelperText('Answer is wrong');
                 setClicked(true)
                 setHighlightColor(false);
             }
-
-            /*} else if (value === 'worst') {
-                setHelperText('Sorry, wrong answer!');
-                setError(true);
-            } else {
-                setHelperText('Please select an option.');
-                setError(true);
-            }*/
     };
+
+    //Leave out question and go to next question
+    const nextQuestion = () => {
+        setCounter((prevCounter) => prevCounter + 1);
+        setClicked(true)
+    }
 
     const [didMount, setDidMount] = useState(false);
 
+    //get elements from DB - get entries from images (questions) - tasks: all entries - image: keys from entries - items: array of answers
     useEffect(async () => {
+        if(props.reset == true) {
+            setCounter(0);
+            setAnswered(0);
+        }
         const ref = db.ref();
-        console.log('data');
         await ref.child("images").get().then((snapshot) => {
             if (snapshot.exists()) {
                 const data = snapshot.val()
@@ -169,55 +204,9 @@ function Task(props) {
                 const items = []
                 const options = []
                 Object.keys(data).map((k,v) => {
-                    /*if(data[Object.keys(data)[v]].answer == undefined) {
-                        console.log('in');
-                        console.log(data[Object.keys(data)[v]])
-                        if(data[Object.keys(data)[v]].option1 && data[Object.keys(data)[v]].option2 && data[Object.keys(data)[v]].option3 && data[Object.keys(data)[v]].option4) {
-                            options.push({
-                                'option1' : data[Object.keys(data)[v]].option1
-                            },
-                                {
-                                    'option2' : data[Object.keys(data)[v]].option2
-                                },
-                                {
-                                    'option3' : data[Object.keys(data)[v]].option3
-                                },
-                                {
-                                    'option4' : data[Object.keys(data)[v]].option4
-                                })
-                        }
-                        else if(data[Object.keys(data)[v]].option1 && data[Object.keys(data)[v]].option2 && data[Object.keys(data)[v]].option3) {
-                            options.push({
-                                    'option1' : data[Object.keys(data)[v]].option1
-                                },
-                                {
-                                    'option2' : data[Object.keys(data)[v]].option2
-                                },
-                                {
-                                    'option3' : data[Object.keys(data)[v]].option3
-                                })
-                        }
-                        else if(data[Object.keys(data)[v]].option1 && data[Object.keys(data)[v]].option2) {
-                            options.push({
-                                    'option1' : data[Object.keys(data)[v]].option1
-                                },
-                                {
-                                    'option2' : data[Object.keys(data)[v]].option2
-                                })                        }
-                        else {
-                            options.push({
-                                    'option1' : data[Object.keys(data)[v]].option1
-                                })
-                        }
-                        items.push(options);
-                    }
-                    else {*/
-                    console.log(data[Object.keys(data)[v]])
-                        items.push(data[Object.keys(data)[v]].answer)
-                    //}
+                    items.push(data[Object.keys(data)[v]].answer)
                 })
                 setAnswer((prevVal) => items);
-                console.log(items)
             }
         }).catch((error) => {
             console.error(error);
@@ -233,72 +222,96 @@ function Task(props) {
         <div>
             {Object.keys(tasks).map((k,r) => {
                 if(JSON.stringify(tutorialSteps[props.activeStep].label).substring(1,JSON.stringify(tutorialSteps[props.activeStep].label).length-1) == JSON.stringify(tasks[image[r]].lesson).substring(1, JSON.stringify(tasks[image[r]].lesson).length - 1)) {
-                    if(counter == r) {
-                        return <Accordion key={r}>
-                            <AccordionSummary expandIcon={<ExpandMoreIcon/>} aria-controls="additional-actions1-content"
-                                              id="additional-actions1-header">
-                                <Typography>{JSON.stringify(tasks[image[r]].action).substring(1, JSON.stringify(tasks[image[r]].action).length - 1)}</Typography>
-                            </AccordionSummary>
-                            <AccordionDetails>
+                    return <Accordion key={r} expanded={counter == r}>
+                        <AccordionSummary expandIcon={<ExpandMoreIcon/>} aria-controls="additional-actions1-content"
+                                          id="additional-actions1-header">
+                            <Typography>{JSON.stringify(tasks[image[r]].action).substring(1, JSON.stringify(tasks[image[r]].action).length - 1)}</Typography>
+                        </AccordionSummary>
+                        <AccordionDetails>
+                            <Box>
                                 <Box>
-                                    <Box>
+                                    {JSON.stringify(tasks[image[r]].link).substring(1, JSON.stringify(tasks[image[r]].link).length - 1) == 'Link' ?
+                                        <p></p> :
                                         <img
                                             style={{width: '100%'}}
-                                            src={JSON.stringify(tasks[image[r]].link).substring(1, JSON.stringify(tasks[image[r]].link).length - 1)}/>
-                                        <p>{JSON.stringify(tasks[image[r]].description).substring(1, JSON.stringify(tasks[image[r]].description).length - 1)}</p>
-                                        {JSON.stringify(tasks[image[r]].hint) != undefined ?
-                                            <div>
-                                                <Button variant="outlined" color={hintInactive} onClick={handleClickOpen}>
-                                                    <InfoIcon/>
-                                                </Button>
-                                                < SimpleDialog open={open} onClose={handleClose}
-                                                               value={JSON.stringify(tasks[image[r]].hint).substring(1, JSON.stringify(tasks[image[r]].hint).length - 1)}/>
+                                            src={JSON.stringify(tasks[image[r]].link).substring(1, JSON.stringify(tasks[image[r]].link).length - 1)}/>}
 
-                                            </div>
-                                            :
-                                            <p></p>
-                                        }
-                                    </Box>
-                                    <Box>
-                                        {tasks[image[r]].type == "single" ?
-                                            <form onSubmit={handleSubmit}>
-                                                <FormControl component="fieldset" error={error}>
-                                                    <RadioGroup aria-label="quiz" name="quiz" value={value}
-                                                                onChange={handleChange}>
-                                                        <FormControlLabel value="true" control={<Radio color="primary"/>}
-                                                                          label="True"/>
-                                                        <FormControlLabel value="false" control={<Radio color="primary"/>}
-                                                                          label="False"/>
-                                                    </RadioGroup>
-                                                    <FormHelperText>{helperText}</FormHelperText>
-                                                    <Button type="submit" variant="outlined" color="primary">
-                                                        Check Answer
-                                                    </Button>
-                                                </FormControl>
-                                            </form> :
-                                            <form onSubmit={handleSubmit}>
-                                                <FormControl component="fieldset" error={error}>
-                                                    <div style={{}}>
-                                                        <Button value={tasks[image[r]].option1} onClick={handleChange} variant="contained" style={{ flex: 1, margin: 10}}>{JSON.stringify(tasks[image[r]].option1)}</Button>
-                                                        <Button value={JSON.stringify(tasks[image[r]].option2)} onClick={handleChange} variant="contained" style={{margin: 10}}>{JSON.stringify(tasks[image[r]].option2)}</Button>
-                                                        <Button value={JSON.stringify(tasks[image[r]].option3)} onClick={handleChange} variant="contained" style={{margin: 10}}>{JSON.stringify(tasks[image[r]].option3)}</Button>
-                                                        {/*<Button>{JSON.stringify(tasks[image[r]].option1)}</Button>*/}
-                                                    </div>
-                                                    <FormHelperText>{helperText}</FormHelperText>
-                                                    <Button type="submit" variant="outlined" color="primary">
-                                                        Check Answer
-                                                    </Button>
-                                                </FormControl>
-                                            </form>}
+                                    <p>{JSON.stringify(tasks[image[r]].description).substring(1, JSON.stringify(tasks[image[r]].description).length - 1)}</p>
+                                    {JSON.stringify(tasks[image[r]].hint) != undefined ?
+                                        <div>
+                                            <Button variant="outlined" color={hintInactive} onClick={handleClickOpen}>
+                                                <InfoIcon/>
+                                            </Button>
+                                            < SimpleDialog open={open} onClose={handleClose}
+                                                           value={JSON.stringify(tasks[image[r]].hint).substring(1, JSON.stringify(tasks[image[r]].hint).length - 1)}/>
 
-
-                                    </Box>
+                                        </div>
+                                        :
+                                        <p></p>
+                                    }
                                 </Box>
-                            </AccordionDetails>
-                        </Accordion>
-                    }
+                                <Box>
+                                    {tasks[image[r]].type == "single" ?
+                                        <form onSubmit={handleSubmit}>
+                                            <FormControl component="fieldset" error={error}>
+                                                <RadioGroup aria-label="quiz" name="quiz" value={value}
+                                                            onChange={handleChange}>
+                                                    <FormControlLabel value="true" control={<Radio color="primary"/>}
+                                                                      label="True"/>
+                                                    <FormControlLabel value="false" control={<Radio color="primary"/>}
+                                                                      label="False"/>
+                                                </RadioGroup>
+                                                <Button type="submit" variant="outlined" color="primary">
+                                                    Check Answer
+                                                </Button>
+                                                <br/>
+                                                <Button variant="outlined" color="default" onClick={nextQuestion}>
+                                                    Next Question
+                                                </Button>
+                                            </FormControl>
+                                        </form> :
+                                        <form onSubmit={handleSubmit}>
+                                            <FormControl component="fieldset" error={error}>
+                                                <div style={{}}>
+                                                    <Button value={tasks[image[r]].option1} onClick={handleChange}
+                                                            variant="contained" style={{
+                                                        flex: 1,
+                                                        margin: 10
+                                                    }}>{JSON.stringify(tasks[image[r]].option1)}</Button>
+                                                    {tasks[image[r]].option2 ?
+                                                        <Button value={JSON.stringify(tasks[image[r]].option2)}
+                                                                onClick={handleChange} variant="contained"
+                                                                style={{margin: 10}}>{JSON.stringify(tasks[image[r]].option2)}</Button> :
+                                                        <p></p>}
+                                                    {tasks[image[r]].option3 ?
+                                                        <Button value={JSON.stringify(tasks[image[r]].option3)}
+                                                                onClick={handleChange} variant="contained"
+                                                                style={{margin: 10}}>{JSON.stringify(tasks[image[r]].option3)}</Button> :
+                                                        <p></p>}
+                                                    {tasks[image[r]].option4 ?
+                                                        <Button value={JSON.stringify(tasks[image[r]].option4)}
+                                                                onClick={handleChange} variant="contained"
+                                                                style={{margin: 10}}>{JSON.stringify(tasks[image[r]].option4)}</Button> :
+                                                        <p></p>}
+                                                </div>
+                                                <Button type="submit" variant="outlined" color="primary">
+                                                    Check Answer
+                                                </Button>
+                                                <br/>
+                                                {/*<Button variant="outlined" color="default" onClick={nextQuestion}>
+                                                    Next Question
+                                                </Button>*/}
+                                            </FormControl>
+                                        </form>}
+
+
+                                </Box>
+                            </Box>
+                        </AccordionDetails>
+                    </Accordion>
+                    /*
                     else {
-                        return <Accordion key={r} disabled={true}>
+                        return <Accordion key={r} className={helperText == "Answer is wrong" ? classes.wrong : ''}>
                             <AccordionSummary expandIcon={<ExpandMoreIcon/>} aria-controls="additional-actions1-content"
                                               id="additional-actions1-header">
                                 <Typography>{JSON.stringify(tasks[image[r]].action).substring(1, JSON.stringify(tasks[image[r]].action).length - 1)}</Typography>
@@ -334,9 +347,12 @@ function Task(props) {
                                                         <FormControlLabel value="false" control={<Radio color="primary"/>}
                                                                           label="False"/>
                                                     </RadioGroup>
-                                                    <FormHelperText>{helperText}</FormHelperText>
                                                     <Button type="submit" variant="outlined" color="primary">
                                                         Check Answer
+                                                    </Button>
+                                                    <br/>
+                                                    <Button variant="outlined" color="default" onClick={nextQuestion}>
+                                                        Next Question
                                                     </Button>
                                                 </FormControl>
                                             </form> :
@@ -346,11 +362,14 @@ function Task(props) {
                                                         <Button value={tasks[image[r]].option1} onClick={handleChange} variant="contained" style={{ flex: 1, margin: 10}}>{JSON.stringify(tasks[image[r]].option1)}</Button>
                                                         <Button value={JSON.stringify(tasks[image[r]].option2)} onClick={handleChange} variant="contained" style={{margin: 10}}>{JSON.stringify(tasks[image[r]].option2)}</Button>
                                                         <Button value={JSON.stringify(tasks[image[r]].option3)} onClick={handleChange} variant="contained" style={{margin: 10}}>{JSON.stringify(tasks[image[r]].option3)}</Button>
-                                                        {/*<Button>{JSON.stringify(tasks[image[r]].option1)}</Button>*/}
+                                                        <Button>{JSON.stringify(tasks[image[r]].option1)}</Button>
                                                     </div>
-                                                    <FormHelperText>{helperText}</FormHelperText>
                                                     <Button type="submit" variant="outlined" color="primary">
                                                         Check Answer
+                                                    </Button>
+                                                    <br/>
+                                                    <Button variant="outlined" color="default" onClick={nextQuestion}>
+                                                        Next Question
                                                     </Button>
                                                 </FormControl>
                                             </form>}
@@ -361,10 +380,17 @@ function Task(props) {
                             </AccordionDetails>
                         </Accordion>
                     }
+            }*/
+
                 }
+                else {
+                    <p>Next Lesson</p>
+                }
+
 
                 })
             }
+            <p>{answeredInfo}</p>
             </div>
 
         )
