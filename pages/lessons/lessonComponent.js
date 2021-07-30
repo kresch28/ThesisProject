@@ -6,10 +6,10 @@ import { CounterContext } from '../index'
 const db = firebase.database();
 
 import {makeStyles, Typography} from "@material-ui/core";
+import { createMuiTheme } from '@material-ui/core/styles';
 
 import Paper from '@material-ui/core/Paper'
 import Box from '@material-ui/core/Box';
-import { createMuiTheme } from '@material-ui/core/styles';
 
 import Accordion from '@material-ui/core/Accordion';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -60,7 +60,7 @@ function Lesson(props) {
         },
         {
             label: 'Lesson 2',
-            tasks: 6
+            tasks: 4
         },
         {
             label: 'Lesson 3',
@@ -72,20 +72,10 @@ function Lesson(props) {
         }
     ];
     const maxSteps = tutorialSteps.length;
-
-    const [didMount, setDidMount] = useState(false);
-
     const [allDone, setAllDone] = React.useState(1);
-
     const [expanded, setExpanded] = React.useState(2);
 
-
-    /*const getUnityElement = (e) => {
-        console.log('here: ' + e.target);
-        console.log('here: ' + e.target.children[1].id)
-        props.sendUnityToParent(e.target.children[1].id)
-    }*/
-
+    const [didMount, setDidMount] = useState(false);
     const [tasks, setTasks] = React.useState({})
     const [taskDescription, setTaskDescription] = React.useState({})
     const { counter, updateCounter } = React.useContext(CounterContext);
@@ -127,7 +117,6 @@ function Lesson(props) {
     if(!didMount) {
         return null;
     }
-
 
 
 

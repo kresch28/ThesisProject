@@ -3,119 +3,129 @@ import Unity, { UnityContext, SendMessage } from "react-unity-webgl";
 import axios from 'axios'
 
 
-/*const unityContext1 = new UnityContext({
-        loaderUrl: './build/AnimationTest1.loader.js',
-        dataUrl: './build/AnimationTest1.data',
-        frameworkUrl: './build/AnimationTest1.framework.js',
-        codeUrl: './build/AnimationTest1.wasm',
+const pinContext = new UnityContext({
+        loaderUrl: './build/PinAnimation.loader.js',
+        dataUrl: './build/PinAnimation.data',
+        frameworkUrl: './build/PinAnimation.framework.js',
+        codeUrl: './build/PinAnimation.wasm',
     });
-function GetUnityContext() {
+function GetPinAnimation() {
     return (
-        <Unity unityContext={unityContext1} style={{
+        <Unity unityContext={pinContext} style={{
             height: "75%",
             width: 800,
             background: "white",}}/>
     )
 }
-const unityContext2 = new UnityContext({
-        loaderUrl: './build/AnimationTest2.loader.js',
-        dataUrl: './build/AnimationTest2.data',
-        frameworkUrl: './build/AnimationTest2.framework.js',
-        codeUrl: './build/AnimationTest2.wasm',
+const usbContex = new UnityContext({
+        loaderUrl: './build/USBAnimation.loader.js',
+        dataUrl: './build/USBAnimation.data',
+        frameworkUrl: './build/USBAnimation.framework.js',
+        codeUrl: './build/USBAnimation.wasm',
     });
-function GetUnityContext1() {
+function GetUSBAnimation() {
     return (
-        <Unity unityContext={unityContext2} style={{
+        <Unity unityContext={usbContex} style={{
             height: "75%",
             width: 800,
             border: "2px solid black",
             background: "grey",}}/>
     )
 }
-const unityContext3 = new UnityContext({
-        loaderUrl: './build/AnimationTest3.loader.js',
-        dataUrl: './build/AnimationTest3.data',
-        frameworkUrl: './build/AnimationTest3.framework.js',
-        codeUrl: './build/AnimationTest3.wasm',
+const powerContext = new UnityContext({
+        loaderUrl: './build/PowerLed.loader.js',
+        dataUrl: './build/PowerLed.data',
+        frameworkUrl: './build/PowerLed.framework.js',
+        codeUrl: './build/PowerLed.wasm',
     });
-function GetUnityContext2() {
+function GetPowerLedAnimation() {
     return (
-        <Unity unityContext={unityContext3} style={{
+        <Unity unityContext={powerContext} style={{
             height: "75%",
             width: 800,
             border: "2px solid black",
             background: "grey",}}/>
     )
 }
-const unityContext4 = new UnityContext(
-    {loaderUrl: './build/AnimationTest4.loader.js',
-        dataUrl: './build/AnimationTest4.data',
-        frameworkUrl: './build/AnimationTest4.framework.js',
-        codeUrl: './build/AnimationTest4.wasm',
+const osciliatorContext = new UnityContext(
+    {loaderUrl: './build/OsciliatorAnimation.loader.js',
+        dataUrl: './build/OsciliatorAnimation.data',
+        frameworkUrl: './build/OsciliatorAnimation.framework.js',
+        codeUrl: './build/OsciliatorAnimation.wasm',
     });
-function GetUnityContext3() {
+function GetOsciliatorAnimation() {
     return (
-        <Unity unityContext={unityContext4} style={{
+        <Unity unityContext={osciliatorContext} style={{
             height: "75%",
             width: 800,
             border: "2px solid black",
             background: "grey",}}/>
     )
 }
-const unityContext5 = new UnityContext({
-        loaderUrl: './build/AnimationTest5.loader.js',
-        dataUrl: './build/AnimationTest5.data',
-        frameworkUrl: './build/AnimationTest5.framework.js',
-        codeUrl: './build/AnimationTest5.wasm',
+const primairyICContext = new UnityContext({
+        loaderUrl: './build/Neuer Ordner.loader.js',
+        dataUrl: './build/IC.data',
+        frameworkUrl: './build/IC.framework.js',
+        codeUrl: './build/IC.wasm',
     });
-function GetUnityContext4() {
+function GetPrimaryICContext() {
     return (
-        <Unity unityContext={unityContext5} style={{
+        <Unity unityContext={primairyICContext} style={{
             height: "75%",
             width: 800,
             border: "2px solid black",
-            background: "grey",}}/>
+            background: "grey",
+        }}/>
     )
 }
-const unityContext6 = new UnityContext({
-    loaderUrl: './build/AnimationTest6.loader.js',
-    dataUrl: './build/AnimationTest6.data',
-    frameworkUrl: './build/AnimationTest6.framework.js',
-    codeUrl: './build/AnimationTest6.wasm',
+const resetButtonContext = new UnityContext({
+    loaderUrl: './build/ResetButton.loader.js',
+    dataUrl: './build/ResetButton.data',
+    frameworkUrl: './build/ResetButton.framework.js',
+    codeUrl: './build/ResetButton.wasm',
 });
-function GetUnityContext5() {
+function GetResetButtonContext() {
     return (
-        <Unity unityContext={unityContext6} style={{
+        <Unity unityContext={resetButtonContext} style={{
             height: "75%",
             width: 800,
             border: "2px solid black",
-            background: "grey",}}/>
+            background: "grey",
+        }}/>
     )
 }
 
-const unityContextController = new UnityContext({
-    loaderUrl: './build/AnimationControl.loader.js',
-    dataUrl: './build/AnimationControl.data',
-    frameworkUrl: './build/AnimationControl.framework.js',
-    codeUrl: './build/AnimationControl.wasm',
-});*/
-
-
+const breadBoardContext = new UnityContext({
+    loaderUrl: './build/BreadboardAnimation.loader.js',
+    dataUrl: './build/BreadboardAnimation.data',
+    frameworkUrl: './build/BreadboardAnimation.framework.js',
+    codeUrl: './build/BreadboardAnimation.wasm',
+});
+function GetBreadBoardContext() {
+    return (
+        <Unity unityContext={breadBoardContext} style={{
+            height: "75%",
+            width: 800,
+            border: "2px solid black",
+            background: "grey",
+        }}/>
+    )
+}
 
 import { firebase } from '../src/initFirebase'
 import Lesson  from "./lessons/lessonComponent";
 import Task from "./tasks/imageTask";
-//import Simulation from "./data/unity";
 
+
+import { Typography } from '@material-ui/core';
+import { makeStyles, useTheme } from '@material-ui/core/styles'
+import { createMuiTheme } from '@material-ui/core/styles';
 
 import Head from 'next/head'
 import Link from '@material-ui/core/Link'
 import Button from '@material-ui/core/Button';
-import { Typography } from '@material-ui/core';
-import { makeStyles, useTheme } from '@material-ui/core/styles'
 import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
-import { createMuiTheme } from '@material-ui/core/styles';
 import { Grid } from '@material-ui/core';
 
 import Accordion from '@material-ui/core/Accordion';
@@ -141,31 +151,7 @@ const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
     root: {
-      width: '100%',
-    },
-    textCenter: {
-        alignItems: props => props.alignItems,
-    },
-    container: {
-        display: 'flex',
-    },
-    paper: {
-        margin: theme.spacing(1),
-    },
-    svg: {
-        width: 100,
-        height: 100,
-    },
-    polygon: {
-        fill: theme.palette.common.white,
-        stroke: theme.palette.divider,
-        strokeWidth: 1,
-    },
-    title: {
-        fontSize: 14,
-    },
-    pos: {
-        marginBottom: 12,
+        width: '100%',
     },
     content: {
         flexGrow: 1,
@@ -183,23 +169,12 @@ const useStyles = makeStyles((theme) => ({
         paddingLeft: theme.spacing(4),
         backgroundColor: theme.palette.background.default,
     },
-    img: {
-        height: 255,
-        maxWidth: 400,
-        overflow: 'hidden',
-        display: 'block',
-        width: '100%',
-    },
     props: {
         color: 'black',
         alignItems: 'center'
-    },
-    accordion: {
-        backgroundColor: '#BAE6FF',
+
     }
 }));
-
-
 
 export const CounterContext = React.createContext({val: 0, updateCounter: () => {}, });
 
@@ -208,34 +183,22 @@ export default function Home(context) {
 
     // Pass the props as the first argument of useStyles()
     const classes = useStyles(theme);
-    const [checked, setChecked] = React.useState(false);
-    const [open, setOpen] = React.useState(false);
 
+    //const [checked, setChecked] = React.useState(false);
+    //const handleChange = () => {
+    //         setChecked((prev) => !prev);
+    //     };
+
+    //Tasks Animation
+    const [open, setOpen] = React.useState(false);
     const handleDrawerOpen = () => {
         setOpen(true);
     };
-
     const handleDrawerClose = () => {
         setOpen(false);
     };
 
-    let AuthButton;
-    if (open) {
-        AuthButton = <Button variant="contained" onClick={handleDrawerClose}>Default</Button>;
-    } else {
-        AuthButton = <Button variant="contained" onClick={handleDrawerOpen}>Default</Button>
-        ;
-    }
 
-    const [selectedIndex, setSelectedIndex] = React.useState(1);
-
-    function handleListItemClick(event, index) {
-        setSelectedIndex(index);
-    }
-
-    const handleChange = () => {
-        setChecked((prev) => !prev);
-    };
 
     const tutorialSteps = [
         {
@@ -276,17 +239,14 @@ export default function Home(context) {
     const [reset, setReset] = React.useState(false);
     const myRef = useRef();
 
+    //after all steps of the lessons are finished the questions open
     const sendDataToParent = (check) => { //
         console.log(check)
         if(check == true) {
             handleDrawerOpen(true);
-            /*const timer = setTimeout(() => {
-                console.log(myRef.current);
-                myRef.current.scrollIntoView({ behavior: 'smooth' })
-            }, 500);
-            return timer;*/
         }
     };
+    //after the whole lesson is finished
     const sendStatusToParent = (check) => {
         if(check == true) {
             setAllDone(true);
@@ -295,16 +255,14 @@ export default function Home(context) {
         }
     }
 
-    /*const unityAnimations = [
-        unityContext, unityContext2, unityContext3, unityContext4, unityContext5
-    ];*/
+    //which animation to the according lesson should be displayed
     const [unityPlayer, setUnityPlayer] = React.useState(0);
     const sendUnityToParent = (r) => { //
         console.log('Number of Simulation ' + r)
         setUnityPlayer(r)
-        /*console.log(unityAnimations[check-1])
-        setUnityPlayer(check);*/
     };
+
+    //Communication with Unity
     const sendDataToUnity1 = () => {
         console.log('here');
         console.log(unityContextController);
@@ -316,37 +274,23 @@ export default function Home(context) {
         unityContextController.send('Arduino_uno','ctrl', '2')
     }
 
-    const data = db.ref().child("tasks").get().then((snapshot) => {
-        if (snapshot.exists()) {
-            //console.log(snapshot.val())
-        }
-        else {
-        console.log("No data available");
-        }
-    }).catch((error) => {
-        console.error(error);
-    });
-
-    const [unityOutput, setUnityOutput] = React.useState();
-
     const updateCounter = () => {
-        setCounter(counter + 1)
+        setCounter(counter + 1);
         console.log(counter);
     }
     const [counter, setCounter] = React.useState(0);
 
-    /*const nextSimulation = () => {
-        setCounter((prevCounter) => prevCounter +1 )
-    }*/
     const [simulationMedia, setSimulationMedia] = React.useState({});
     const [isLoaded, setIsLoaded] = useState(false);
 
 
-    const [unityAnimations, setUnityAnimations] = React.useState({});
-    const [unityVar, setUnityVar] = React.useState();
+
     const [contextUnity, setContextUnity] = React.useState();
 
-    const getUnityContext = () => {
+  /*
+  const [unityAnimations, setUnityAnimations] = React.useState({});
+    const [unityVar, setUnityVar] = React.useState();
+  const getUnityContext = () => {
         console.log(context);
         const contextR = new UnityContext(
             {
@@ -369,6 +313,10 @@ export default function Home(context) {
     const [frameworkUrl, setFrameworkUrl] = React.useState('');
     const [codeUrl, setCodeUrl] = React.useState('');
 
+    const returnUnityContext =()=> {
+        return contextUnity;
+    } */
+
     useEffect(async () => {
         if(allDone == true) {
 
@@ -390,28 +338,25 @@ export default function Home(context) {
             if (snapshot.exists()) {
                 const data = snapshot.val();
                 Object.keys(data).map((k,r) => {
-                    if(unityPlayer == r) {
-                        console.log(JSON.stringify(data[k]) + " " + r);
-                        console.log(data[k].loader);
-                        setUnityAnimations({context : data[k]})
-
-                        const thisContext = new UnityContext({
+                  if(r == counter) {
+                const thisContext = new UnityContext({
                             loaderUrl: data[k].loader,
                             dataUrl: data[k].dataUrl,
                             frameworkUrl: data[k].framework,
                             codeUrl: data[k].codeUrl,
                         });
-                        console.log(thisContext);
-                        setContextUnity(thisContext)
-                    }
+                        setContextUnity(thisContext);
+
+                  }
                 })
+
             } else {
                 console.log("No data available");
             }
         }).catch((error) => {
             console.error(error);
         });
-    }, []);
+    }, [counter]);
 
 
     //const unityInstance = UnityLoader.instatiate('unityContainer', "./build/AnimationControl.loader.js", {onProgress: UnityProgress});
@@ -463,89 +408,73 @@ export default function Home(context) {
                                 }
                                 else {
                                     if(start) {
-                                        return (
-                                            <div>{/*
-                                                { unityPlayer == 0 ?
-                                                    <p style={{margin: "40px"}}>Read the introduction of the lesson and work your way trough the steps of the lesson by checking them of</p> :
-                                                    <p></p>}
-                                                { unityPlayer == 1 ?
-                                                    <div style={{visibility: isLoaded ? "visible" : "hidden", position: 'absolute'}}>
-                                                        <Suspense fallback={<p>Model loading...</p>}>
-                                                            <GetUnityContext />
-                                                        </Suspense>
-                                                    </div> :
-                                                <p></p>}
-                                                { unityPlayer == 2 ?
-                                                    <div style={{position: 'absolute'}}>
-                                                        <Suspense fallback={<p>Model loading...</p>}>
-                                                            <GetUnityContext1 />
-                                                        </Suspense>
-                                                    </div> :
-                                                    <p></p>}
-                                                { unityPlayer == 3 ?
-                                                    <div style={{position: 'absolute'}}>
-                                                        <Suspense fallback={<p>Model loading...</p>}>
-                                                            <GetUnityContext2 />
-                                                        </Suspense>
-                                                    </div> :
-                                                    <p></p>}
-                                                { unityPlayer == 4 ?
-                                                    <div style={{position: 'absolute'}}>
-                                                        <Suspense fallback={<p>Model loading...</p>}>
-                                                            <GetUnityContext3 />
-                                                        </Suspense>
-                                                    </div> :
-                                                    <p></p>}
-                                                { unityPlayer == 5 ?
-                                                    <div style={{position: 'absolute'}}>
-                                                        <Suspense fallback={<p>Model loading...</p>}>
-                                                            <GetUnityContext5 />
-                                                        </Suspense>
-                                                    </div> :
-                                                    <p></p>}
-                                                { unityPlayer == 6 ?
-                                                    <div style={{position: 'absolute'}}>
-                                                        <Suspense fallback={<p>Model loading...</p>}>
-                                                            <GetUnityContext4 />
-                                                        </Suspense>
-                                                    </div> :
-                                                    <p></p>}*/}
-                                                    <div style={{position: "absolute"}}>
-                                                        <Suspense fallback={<p>Model loading...</p>}>
-                                                            <Unity unityContext={contextUnity} style={{
-                                                                height: "75%",
-                                                                width: 800,
-                                                                border: "2px solid black",
-                                                                background: "grey",}}/>
-                                                        </Suspense>
-                                                    </div>
-                                                {/*<div style={{position: 'absolute'}}>
-                                                    <Suspense fallback={<p>Model loading...</p>}>
-                                                        <GetUnityContext4 />
-                                                    </Suspense>
+                                        if(activeStep == 0) {
+                                            return (
+                                                <div>
+                                                    {unityPlayer == 0 ?
+                                                        <p style={{margin: "40px"}}>Read the introduction of the lesson
+                                                            and work your way trough the steps of the lesson by checking
+                                                            them of</p> :
+                                                        <p></p>}
+                                                    {unityPlayer == 1 ?
+                                                        <div style={{position: 'absolute'}}>
+                                                            <Suspense fallback={<p>Model loading...</p>}>
+                                                                <GetPinAnimation/>
+                                                            </Suspense>
+                                                        </div> :
+                                                        <p></p>}
+                                                    {unityPlayer == 2 ?
+                                                        <div style={{position: 'absolute'}}>
+                                                            <Suspense fallback={<p>Model loading...</p>}>
+                                                                <GetUSBAnimation/>
+                                                            </Suspense>
+                                                        </div> :
+                                                        <p></p>}
+                                                    {unityPlayer == 3 ?
+                                                        <div style={{position: 'absolute'}}>
+                                                            <Suspense fallback={<p>Model loading...</p>}>
+                                                                <GetPowerLedAnimation/>
+                                                            </Suspense>
+                                                        </div> :
+                                                        <p></p>}
+                                                    {unityPlayer == 4 ?
+                                                        <div style={{position: 'absolute'}}>
+                                                                <Suspense fallback={<p>Model loading...</p>}>
+                                                                <GetPrimaryICContext/>
+                                                            </Suspense>
+                                                        </div> :
+                                                        <p></p>}
+                                                    {unityPlayer == 5 ?
+                                                        <div style={{position: 'absolute'}}>
+                                                            <Suspense fallback={<p>Model loading...</p>}>
+                                                                <GetOsciliatorAnimation/>
+                                                            </Suspense>
+                                                        </div> :
+                                                        <p></p>}
+                                                    {unityPlayer == 6 ?
+                                                        <div style={{position: 'absolute'}}>
+                                                            <Suspense fallback={<p>Model loading...</p>}>
+                                                                <GetResetButtonContext/>
+                                                            </Suspense>
+                                                        </div> :
+                                                        <p></p>}
                                                 </div>
-                                                <div style={{position: 'absolute'}}>
-                                                    <Suspense fallback={<p>Model loading...</p>}>
-                                                        <GetUnityContext3 />
-                                                    </Suspense>
+                                            )
+                                        }
+                                        if(activeStep == 1) {
+                                            return (
+                                                <div>
+                                                    {unityPlayer == 8 ?
+                                                        <div style={{position: 'absolute'}}>
+                                                            <Suspense fallback={<p>Model loading...</p>}>
+                                                                <GetBreadBoardContext/>
+                                                            </Suspense>
+                                                        </div> :
+                                                        <p></p>}
                                                 </div>
-                                                <div style={{position: 'absolute'}}>
-                                                    <Suspense fallback={<p>Model loading...</p>}>
-                                                        <GetUnityContext2 />
-                                                    </Suspense>
-                                                </div>
-                                                <div style={{position: 'absolute'}}>
-                                                    <Suspense fallback={<p>Model loading...</p>}>
-                                                        <GetUnityContext1 />
-                                                    </Suspense>
-                                                </div>
-                                                <div style={{position: 'absolute'}}>
-                                                    <Suspense fallback={<p>Model loading...</p>}>
-                                                        <GetUnityContext />
-                                                    </Suspense>
-                                                </div>*/}
-                                            </div>
-                                        )
+                                            )
+
+                                        }
                                     }
                                 }
 
@@ -553,12 +482,7 @@ export default function Home(context) {
                             )}
                         </div>
 
-                        {/*<Button variant="outlined"  onClick={sendDataToUnity1}>
-                            Show
-                        </Button>
-                        <Button variant="outlined"  onClick={sendDataToUnity2}>
-                            Hide
-                        </Button>*/}
+
                     </Grid>
                     <Grid item xs={6}>
                         <p align="center">Task Management</p>
@@ -577,9 +501,9 @@ export default function Home(context) {
                             </AccordionSummary>
                             <AccordionDetails>
                                 <Typography>This course is structured as follows: First we will concentrate on naming the individual <Link href="#" onClick={() => handleDirectLink(0)} color="primary">Arduino Components</Link> and
-                                    explaining their functionality. With these set of components we will show how quick and easy it is to compose a <Link href="#" onClick={() => handleDirectLink(1)} color="primary">Basic Circuit</Link>.
-                                    For advanced circuits we will also show you some <Link href="#"  onClick={() => handleDirectLink(2)} color="primary">Additional Comonents</Link> that can be added to a circuit.
-                                    Lastly we will introduce into the basics of <Link href="#" onClick={() => handleDirectLink(3)} color="primary">Circuit Schematics</Link> and show you the basics on how to code with the <Link href="#" onClick={() => handleDirectLink(4)} color="primary">Arduino Software</Link>.
+                                    explaining their functionality. With these set of components we will show how quick and easy it is to compose a <Link href="#" onClick={() => handleDirectLink(2)} color="primary">Basic Circuit</Link>.
+                                    For advanced circuits we will also show you some <Link href="#"  onClick={() => handleDirectLink(3)} color="primary">Additional Components</Link> that can be added to a circuit.
+                                    Lastly we will introduce into the basics of <Link href="#" onClick={() => handleDirectLink(1)} color="primary">Circuit Schematics</Link> and show you the basics on how to code with the <Link href="#" onClick={() => handleDirectLink(4)} color="primary">Arduino Software</Link>.
                                     That will allow you to read instructions for different circuits and program and control your Arduino.
                                 </Typography>
                             </AccordionDetails>
@@ -611,11 +535,7 @@ export default function Home(context) {
                                 </Button>
                             }
                         />
-                        {/*<p align="center">
 
-                            {open ? (<Button onClick={handleDrawerClose}>Close</Button>) :
-                                (<Button onClick={handleDrawerOpen}>Open Tasks</Button> ) }
-                        </p>*/}
                         <Slide direction="right" in={open} mountOnEnter unmountOnExit>
                             <div>
                                 <Paper square elevation={0}>
@@ -623,15 +543,7 @@ export default function Home(context) {
                                 </Paper>
 
                                 <Task activeStep={activeStep} sendStatusToParent={sendStatusToParent} reset={reset}/>
-                                {/*<Accordion>
-                                    <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
-                                        <Typography>Task 2</Typography>
-                                    </AccordionSummary>
-                                    <AccordionDetails>
-                                        <Typography> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse malesuada lacus ex, sit amet blandit leo lobortis eget.
-                                        </Typography>
-                                    </AccordionDetails>
-                                </Accordion>*/}
+
                             </div>
                         </Slide>
                     </Grid>

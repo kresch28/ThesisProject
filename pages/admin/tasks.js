@@ -1,12 +1,9 @@
-import Link from 'next/link'
-import Container from '@material-ui/core/Container';
 import React, {useEffect} from "react";
 
 import firebase from "firebase";
 import 'firebase/auth';
 import 'firebase/database';
 
-import Button from '@material-ui/core/Button';
 
 const config = {
     apiKey: "AIzaSyAo0G2bLK7VP77P6ojpfP1q-Fwj9QXcRXA",
@@ -27,9 +24,12 @@ initFirebase();
 
 const db = firebase.database();
 
+import Button from '@material-ui/core/Button';
+import Link from 'next/link'
+import Container from '@material-ui/core/Container';
+
 export default function Tasks() {
 
-    const [timeout, setTimeout] = React.useState(0);
     const [task, setTask] = React.useState("Task");
     const [taskTitle, setTaskTitle] = React.useState("TaskTitle");
     const [lesson, setLesson] = React.useState("Lesson 1");
@@ -59,14 +59,6 @@ export default function Tasks() {
         console.log(amount);
         return amount;
     }
-    /*const [result, setResult] = React.useState(null);
-    React.useEffect(() => {
-        const ref = db.ref(`results`);
-        ref.on("value", (snapshot) => {
-            setResult(snapshot.val());
-        });
-        return () => ref.off();
-    })*/
 
     const lessonInfos = [
         {
@@ -94,10 +86,6 @@ export default function Tasks() {
         setAnswer({...answer, [e.target.name]: e.target.value });
     }
 
-    /*useEffect(() => {
-        const timeoutId = setTimeout(() => console.log(`I can see you're not typing. I can use "${answer}" now!`), 1000);
-        return () => clearTimeout(timeoutId);
-    }, [answer]);*/
 
 
     return (
@@ -116,13 +104,15 @@ export default function Tasks() {
                     });
                     console.log(lesson);
                 }}>
-                    <label>Lesson:
+                    <label>Lesson: </label>
                         <select name={lesson} size="1" onChange={handleChange}>
                             {lessonInfos.map((l,k) => <option key={k} value={l.label}>{l.label}</option>) }
                         </select>
-                    </label>
-                    {/*<input name={'lesson'} value={lesson} onChange={(e) => setLesson(e.target.value)}/>*/}
+                    <br/>
+                    <label>Task Title: </label>
                     <input name={'title'} value={taskTitle} onChange={(e) => setTaskTitle(e.target.value)}/>
+                    <br/>
+                    <label>Task Description: </label>
                     <textarea cols="50" rows="8" name={'task'} value={task} onChange={(e) => setTask(e.target.value)}/>
                     <p>Current Task: {JSON.stringify(task)}</p>
                     <Button color="primary" type={"submit"}>Create Task</Button>
@@ -144,8 +134,10 @@ export default function Tasks() {
                         <select name={lesson} size="1" onChange={handleChange}>
                             {lessonInfos.map((l,k) => <option key={k} value={l.label}>{l.label}</option>) }
                         </select>
-                    </label>
+                    </label><br/>
+                    <label>Link: </label>
                     <input name={'link'} value={link} onChange={(e) => setLink(e.target.value)}/>
+                    <br/>
                     <Button color="primary" type={"submit"}>Add Media</Button>
                 </form>
             </Container>
@@ -226,7 +218,6 @@ export default function Tasks() {
                             {lessonInfos.map((l,k) => <option key={k} value={l.label}>{l.label}</option>) }
                         </select>
                     </div><br/>
-                    {/*<input name={'lesson'} value={lesson} onChange={(e) => setLesson(e.target.value)}/>*/}
                     <div>
                         <label>Title: </label>
                         <input name={'title'} value={actionTitle} onChange={(e) => setActionTitle(e.target.value)}/>
@@ -280,7 +271,6 @@ export default function Tasks() {
                             </select>
 
                         </div><br/>
-                    {/*<input name={'lesson'} value={lesson} onChange={(e) => setLesson(e.target.value)}/>*/}
                     <div>
                         <label>Title: </label>
                         <input name={'title'} value={actionTitle} onChange={(e) => setActionTitle(e.target.value)}/>
@@ -317,18 +307,11 @@ export default function Tasks() {
                         framework: framework,
                         codeUrl: codeUrl                    });
                 }}>
-                    <label>Loader:
-                        <input name={'link'} value={loader} onChange={(e) => setLink(e.target.value)}/>
-                    </label>
-                    <label>Data:
-                        <input name={'link'} value={dataUrl} onChange={(e) => setLink(e.target.value)}/>
-                    </label>
-                    <label>Framework:
-                        <input name={'link'} value={framework} onChange={(e) => setLink(e.target.value)}/>
-                    </label>
-                    <label>Code:
-                        <input name={'link'} value={codeUrl} onChange={(e) => setLink(e.target.value)}/>
-                    </label>
+
+                    <input type={'hidden'} name={'link'} value={loader} onChange={(e) => setLink(e.target.value)}/>
+                    <input type={'hidden'} name={'link'} value={dataUrl} onChange={(e) => setLink(e.target.value)}/>
+                    <input type={'hidden'} name={'link'} value={framework} onChange={(e) => setLink(e.target.value)}/>
+                    <input type={'hidden'} name={'link'} value={codeUrl} onChange={(e) => setLink(e.target.value)}/>
                     <Button color="primary" type={"submit"}>Add Simulation</Button>
                 </form>
             </Container>
