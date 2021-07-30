@@ -1,5 +1,3 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
-
 ## Getting Started
 
 First, check if your Node.js version is higher than 10 
@@ -19,6 +17,8 @@ yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+You can find all the details to the application and the survery in the [following document]: (https://docs.google.com/document/d/1TFgzLLtQcTu8lAUXrnbJ1RLydbYZpk9qnilkE0AgEM0/edit?usp=sharing)
+After you solved all the tasks please answer the [following questions]: (https://forms.gle/6KrupV9E3Mmk7KyN6)
 
 ## Learn More
 
