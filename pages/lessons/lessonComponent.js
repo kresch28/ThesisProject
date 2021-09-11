@@ -82,7 +82,7 @@ function Lesson(props) {
 
 
     const openSimulation = (r) => {
-        props.sendUnityToParent(r);
+        //props.sendUnityToParent(r);
     }
 
     if(counter == tutorialSteps[props.activeStep].tasks+1) {

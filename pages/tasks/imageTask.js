@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { firebase } from '../../src/initFirebase'
 import axios from 'axios';
+import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
 const db = firebase.database();
 
@@ -22,6 +23,7 @@ import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 
 import InfoIcon from '@material-ui/icons/Info';
+import KeyboardArrowLeft from "../index";
 
 let theme = createMuiTheme();
 theme.spacing(2);
@@ -149,6 +151,10 @@ function Task(props) {
         }
 
     };
+
+    const nextLesson = () => {
+        props.sendDoneToParent(true);
+    }
 
     //Validation Process
     //right answer if answer of DB element with the current counter is the same
@@ -320,7 +326,9 @@ function Task(props) {
 
                 })
             }
-            <p>{answeredInfo}</p>
+            {answeredInfo}
+            <br/>
+            {answeredInfo == 'You have answered all of the questions of this lesson. Press Next to go to the next lesson' ? <Button onClick={nextLesson}>Next<KeyboardArrowRight /></Button> : ' '}
             </div>
 
         )

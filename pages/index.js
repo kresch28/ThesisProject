@@ -79,10 +79,10 @@ function GetPrimaryICContext() {
     )
 }
 const resetButtonContext = new UnityContext({
-    loaderUrl: './build/ResetButton.loader.js',
-    dataUrl: './build/ResetButton.data',
-    frameworkUrl: './build/ResetButton.framework.js',
-    codeUrl: './build/ResetButton.wasm',
+    loaderUrl: './build/AnimationCommunication.loader.js',
+    dataUrl: './build/AnimationCommunication.data',
+    frameworkUrl: './build/AnimationCommunication.framework.js',
+    codeUrl: './build/AnimationCommunication.wasm',
 });
 function GetResetButtonContext() {
     return (
@@ -112,6 +112,13 @@ function GetBreadBoardContext() {
     )
 }
 
+const communicationContext = new UnityContext({
+    loaderUrl: './build/AnimationCommunication.loader.js',
+    dataUrl: './build/AnimationCommunication.data',
+    frameworkUrl: './build/AnimationCommunication.framework.js',
+    codeUrl: './build/AnimationCommunication.wasm',
+});
+
 import { firebase } from '../src/initFirebase'
 import Lesson  from "./lessons/lessonComponent";
 import Task from "./tasks/imageTask";
@@ -140,6 +147,11 @@ import KeyboardArrowLeft from '@material-ui/icons/KeyboardArrowLeft';
 import KeyboardArrowRight from '@material-ui/icons/KeyboardArrowRight';
 
 import Slide from '@material-ui/core/Slide';
+
+import Slider from '@material-ui/core/Slider';
+import Input from '@material-ui/core/Input';
+import VolumeUp from '@material-ui/icons/VolumeUp';
+
 
 let theme = createMuiTheme();
 theme.spacing(2);
@@ -257,9 +269,10 @@ export default function Home(context) {
 
     //which animation to the according lesson should be displayed
     const [unityPlayer, setUnityPlayer] = React.useState(0);
-    const sendUnityToParent = (r) => { //
-        console.log('Number of Simulation ' + r)
-        setUnityPlayer(r)
+    const sendDoneToParent = (r) => { //
+        if(r == true) {
+            handleNext();
+        }
     };
 
     //Communication with Unity
@@ -375,12 +388,64 @@ export default function Home(context) {
         updateCounter();
     };
 
+    const [rotate, setRotate] = React.useState(0);
+
+    const handleSliderChange = (event, newValue) => {
+        setRotate(newValue);
+        rotateModelLeft();
+    };
+
+    function onInput(event) {
+        if(rotate < event.target.value) {
+            console.log("increasing");
+            rotateModelLeft()
+        } else {
+            console.log("decreasing");
+            rotateModelRight()
+        }
+        setRotate(event.target.value);
+    }
+
+    function onChange(event) {
+        console.log("onChange: " + event.target.value);
+    }
+
+    function onInputRight(event) {
+        if(rotate > event.target.value) {
+            console.log("increasing");
+            rotateModelRight()
+        } else {
+            console.log("decreasing");
+            rotateModelLeft()
+        }
+        setRotate(event.target.value);
+    }
+
+    function onChangeRight(event) {
+        console.log("onChange: " + event.target.value);
+    }
+
+    function rotateModelLeft() {
+        communicationContext.send("Arduino_uno", "LeftRotation",);
+    }
+
+    function rotateModelRight() {
+        communicationContext.send("Arduino_uno", "RightRotation",);
+    }
+
+    function zoom() {
+        communicationContext.send("Arduino_uno", "Zoom");
+    }
+
+    function zoomOut() {
+        communicationContext.send("Arduino_uno", "ZoomOut");
+    }
 
 
     return (
       <div>
           <CounterContext.Provider value={{counter, updateCounter}}>
-          <Box className={classes.props} border={5} borderColor="orange" m={3} p={2}>
+          <Box className={classes.props}>
             <Head>
             <title>Create Next App</title>
             <link rel="icon" href="/favicon.ico" />
@@ -389,10 +454,7 @@ export default function Home(context) {
             <main>
                 <Container maxWidth="sm">
                     <h1 align="center">
-                    Read{' '}
-                    <Link href="/posts/first-post" color="inherit">
-                        this page!
-                    </Link>
+                    Arduni Proto
                     </h1>
               </Container>
 
@@ -411,53 +473,39 @@ export default function Home(context) {
                                         if(activeStep == 0) {
                                             return (
                                                 <div>
-                                                    {unityPlayer == 0 ?
-                                                        <p style={{margin: "40px"}}>Read the introduction of the lesson
-                                                            and work your way trough the steps of the lesson by checking
-                                                            them of</p> :
-                                                        <p></p>}
-                                                    {unityPlayer == 1 ?
-                                                        <div style={{position: 'absolute'}}>
-                                                            <Suspense fallback={<p>Model loading...</p>}>
-                                                                <GetPinAnimation/>
-                                                            </Suspense>
-                                                        </div> :
-                                                        <p></p>}
-                                                    {unityPlayer == 2 ?
-                                                        <div style={{position: 'absolute'}}>
-                                                            <Suspense fallback={<p>Model loading...</p>}>
-                                                                <GetUSBAnimation/>
-                                                            </Suspense>
-                                                        </div> :
-                                                        <p></p>}
-                                                    {unityPlayer == 3 ?
-                                                        <div style={{position: 'absolute'}}>
-                                                            <Suspense fallback={<p>Model loading...</p>}>
-                                                                <GetPowerLedAnimation/>
-                                                            </Suspense>
-                                                        </div> :
-                                                        <p></p>}
-                                                    {unityPlayer == 4 ?
-                                                        <div style={{position: 'absolute'}}>
-                                                                <Suspense fallback={<p>Model loading...</p>}>
-                                                                <GetPrimaryICContext/>
-                                                            </Suspense>
-                                                        </div> :
-                                                        <p></p>}
-                                                    {unityPlayer == 5 ?
-                                                        <div style={{position: 'absolute'}}>
-                                                            <Suspense fallback={<p>Model loading...</p>}>
-                                                                <GetOsciliatorAnimation/>
-                                                            </Suspense>
-                                                        </div> :
-                                                        <p></p>}
-                                                    {unityPlayer == 6 ?
-                                                        <div style={{position: 'absolute'}}>
-                                                            <Suspense fallback={<p>Model loading...</p>}>
-                                                                <GetResetButtonContext/>
-                                                            </Suspense>
-                                                        </div> :
-                                                        <p></p>}
+                                                    <div>
+                                                        <Unity unityContext={communicationContext} style={{
+                                                            height: "75%",
+                                                            width: 800,
+                                                            border: "2px solid black",
+                                                            background: "grey",
+                                                        }}/>
+                                                        <div>{/*
+                                                            <Typography gutterBottom>
+                                                                Rotate
+                                                            </Typography>
+                                                            <Grid container spacing={2} alignItems="center">
+                                                                <Grid item xs>
+                                                                    <Slider
+                                                                        value={typeof rotate === 'number' ? rotate : 0}
+                                                                        onChange={handleSliderChange}
+                                                                        aria-labelledby="input-slider"
+                                                                    />
+                                                                </Grid>
+                                                            </Grid>*/}
+
+                                                            <button onClick={zoom}>Zoom Out</button>
+                                                            <button onClick={zoomOut}>Zoom In</button>
+                                                            <Grid>
+                                                                <label>Rotate: </label>
+                                                                <input type="range"
+                                                                       min="0" max="360"
+                                                                       value={rotate}
+                                                                       onInput={onInput} onChange={onChange}/>
+
+                                                            </Grid>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             )
                                         }
@@ -485,7 +533,6 @@ export default function Home(context) {
 
                     </Grid>
                     <Grid item xs={6}>
-                        <p align="center">Task Management</p>
                         <Accordion >
                             <AccordionSummary className={classes.accordion} expandIcon={<ExpandMoreIcon />} aria-controls="panel2a-content" id="panel2a-header">
                                 <Typography>About this course</Typography>
@@ -500,22 +547,24 @@ export default function Home(context) {
                                 <Typography>Lessons</Typography>
                             </AccordionSummary>
                             <AccordionDetails>
-                                <Typography>This course is structured as follows: First we will concentrate on naming the individual <Link href="#" onClick={() => handleDirectLink(0)} color="primary">Arduino Components</Link> and
-                                    explaining their functionality. With these set of components we will show how quick and easy it is to compose a <Link href="#" onClick={() => handleDirectLink(2)} color="primary">Basic Circuit</Link>.
-                                    For advanced circuits we will also show you some <Link href="#"  onClick={() => handleDirectLink(3)} color="primary">Additional Components</Link> that can be added to a circuit.
-                                    Lastly we will introduce into the basics of <Link href="#" onClick={() => handleDirectLink(1)} color="primary">Circuit Schematics</Link> and show you the basics on how to code with the <Link href="#" onClick={() => handleDirectLink(4)} color="primary">Arduino Software</Link>.
+                                <Typography>This course is structured as follows: First we will concentrate on naming the individual <Button variant="outlined" color="primary"  onClick={() => handleDirectLink(0)}>Arduino Components</Button> and
+                                    explaining their functionality. With these set of components we will show how quick and easy it is to compose a <Button variant="outlined" color="primary"  onClick={() => handleDirectLink(2)} color="primary">Basic Circuit</Button>.
+                                    For advanced circuits we will also show you some <Button variant="outlined" color="primary"   onClick={() => handleDirectLink(3)} color="primary">Additional Components</Button> that can be added to a circuit.
+                                        Lastly we will introduce into the basics of <Button variant="outlined" color="primary"  onClick={() => handleDirectLink(1)} color="primary">Circuit Schematics</Button> and show you the basics on how to code with the <Button variant="outlined" color="primary"  onClick={() => handleDirectLink(4)} color="primary">Arduino Software</Button>.
                                     That will allow you to read instructions for different circuits and program and control your Arduino.
                                 </Typography>
                             </AccordionDetails>
                         </Accordion>
                         <p></p>
+                        <p align="center">Task Management</p>
                         <Box>
                             <Button variant="outlined" color="primary" onClick={startLesson} >
                                 Start Lesson
                             </Button>
                         </Box>
                         <p></p>
-                        < Lesson activeStep={activeStep} sendDataToParent={sendDataToParent} sendUnityToParent={sendUnityToParent} reset={reset}/>
+                        < Lesson activeStep={activeStep} sendDataToParent={sendDataToParent} reset={reset}/>
+
 
                         <MobileStepper
                             steps={maxSteps}
@@ -542,7 +591,7 @@ export default function Home(context) {
                                     <h2 align="center">Questions</h2>
                                 </Paper>
 
-                                <Task activeStep={activeStep} sendStatusToParent={sendStatusToParent} reset={reset}/>
+                                <Task activeStep={activeStep} sendStatusToParent={sendStatusToParent} sendDoneToParent={sendDoneToParent} reset={reset}/>
 
                             </div>
                         </Slide>
