@@ -395,22 +395,13 @@ export default function Home(context) {
         rotateModelLeft();
     };
 
-    function onInput(event) {
-        if(rotate < event.target.value) {
-            console.log("increasing");
-            rotateModelLeft()
-        } else {
-            console.log("decreasing");
-            rotateModelRight()
-        }
-        setRotate(event.target.value);
-    }
+    
 
     function onChange(event) {
         console.log("onChange: " + event.target.value);
     }
 
-    function onInputRight(event) {
+    function onRotateRight(event) {
         if(rotate > event.target.value) {
             console.log("increasing");
             rotateModelRight()
@@ -423,6 +414,17 @@ export default function Home(context) {
 
     function onChangeRight(event) {
         console.log("onChange: " + event.target.value);
+    }
+
+    function onRotate(event) {
+        if(rotate < event.target.value) {
+            console.log("increasing");
+            rotateModelLeft()
+        } else {
+            console.log("decreasing");
+            rotateModelRight()
+        }
+        setRotate(event.target.value);
     }
 
     function rotateModelLeft() {
@@ -501,7 +503,7 @@ export default function Home(context) {
                                                                 <input type="range"
                                                                        min="0" max="360"
                                                                        value={rotate}
-                                                                       onInput={onInput} onChange={onChange}/>
+                                                                       onRotate={onRotate} onChange={onChange}/>
 
                                                             </Grid>
                                                         </div>
